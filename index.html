@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Диспетчерский контроль энергоснабжения</title>
-    <!-- Подключаем математические библиотеки -->
+    <title>Диспетчерский контроль - Многоузловая сеть</title>
     <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
-    <!-- Подключаем Chart.js для графиков -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
@@ -25,7 +23,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -43,147 +41,121 @@
             margin-bottom: 20px;
         }
 
-        /* Дашборд с показателями - СЕТКА 2x3 */
-        .dashboard {
+        /* Сетка для узлов сети */
+        .network-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 12px;
             margin-bottom: 20px;
         }
 
-        /* Для планшетов и ПК можно сделать 3x2 или 6 колонок */
-        @media (min-width: 768px) {
-            .dashboard {
-                grid-template-columns: repeat(3, 1fr);
-            }
+        /* Карточка узла */
+        .node-card {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 16px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
         }
 
-        @media (min-width: 1024px) {
-            .dashboard {
-                grid-template-columns: repeat(6, 1fr);
-            }
+        .node-card.alert {
+            border: 2px solid #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            animation: pulseBorder 1s infinite;
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 12px 8px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.2s;
+        .node-card.warning {
+            border: 2px solid #ffd43b;
+            background: rgba(255, 212, 59, 0.05);
         }
 
-        .card:active {
-            transform: scale(0.98);
+        @keyframes pulseBorder {
+            0%, 100% { border-color: #ff4444; }
+            50% { border-color: #ff8888; }
         }
 
-        .card-value {
-            font-size: 1.4rem;
-            font-weight: bold;
-            margin: 6px 0 4px;
-            line-height: 1.2;
-        }
-
-        .card-label {
-            color: #aaa;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .card-unit {
-            font-size: 0.6rem;
-            color: #888;
-        }
-
-        .warning {
-            color: #ffd43b;
-        }
-
-        .danger {
-            color: #ff6b6b;
-            animation: pulse 1s infinite;
-        }
-
-        .normal {
-            color: #51cf66;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        /* Основная сетка - на мобильных вертикально */
-        .main-grid {
+        .node-header {
             display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-bottom: 20px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Для планшетов и шире - сетка */
-        @media (min-width: 768px) {
-            .main-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-            }
+        .node-name {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #00b4d8;
         }
 
+        .node-badge {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .node-badge.transformer { background: #ff6b6b; color: white; }
+        .node-badge.consumer { background: #51cf66; color: white; }
+        .node-badge.input { background: #ffd43b; color: #1a1a2e; }
+
+        .node-params {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .param {
+            text-align: center;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .param-label {
+            font-size: 0.6rem;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+
+        .param-value {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .param-value.normal { color: #51cf66; }
+        .param-value.warning { color: #ffd43b; }
+        .param-value.danger { color: #ff6b6b; }
+
+        .node-risk {
+            margin-top: 8px;
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .risk-low { background: rgba(81, 207, 102, 0.2); color: #51cf66; }
+        .risk-medium { background: rgba(255, 212, 59, 0.2); color: #ffd43b; }
+        .risk-high { background: rgba(255, 68, 68, 0.2); color: #ff6b6b; }
+
+        /* Остальные стили как в предыдущей версии */
         .panel {
             background: rgba(0, 0, 0, 0.5);
             border-radius: 16px;
             padding: 16px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
         }
 
         .panel h3 {
             margin-bottom: 12px;
             color: #00b4d8;
             font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        /* Таблица рисков - адаптивная */
-        .risk-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.75rem;
-        }
-
-        .risk-table th, .risk-table td {
-            padding: 8px 4px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .risk-table th:first-child, .risk-table td:first-child {
-            padding-left: 0;
-        }
-
-        .risk-table th:last-child, .risk-table td:last-child {
-            padding-right: 0;
-        }
-
-        .risk-high {
-            background: rgba(255, 68, 68, 0.2);
-            color: #ff8888;
-        }
-
-        .risk-medium {
-            background: rgba(255, 193, 7, 0.2);
-            color: #ffd43b;
-        }
-
-        .risk-low {
-            color: #51cf66;
-        }
-
-        /* Рекомендации */
         .recommendation-item {
             background: rgba(0, 180, 216, 0.1);
             margin: 10px 0;
@@ -198,12 +170,6 @@
             background: rgba(255, 68, 68, 0.1);
         }
 
-        .recommendation-high {
-            border-left-color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.1);
-        }
-
-        /* Кнопки управления */
         .controls {
             display: flex;
             flex-wrap: wrap;
@@ -220,90 +186,26 @@
             border-radius: 10px;
             cursor: pointer;
             font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.3s;
             flex: 1;
             min-width: 100px;
-            -webkit-tap-highlight-color: transparent;
         }
 
-        button:active {
-            transform: scale(0.97);
-        }
+        button.danger { background: #ff4444; }
+        button:active { transform: scale(0.97); }
 
-        button.danger {
-            background: #ff4444;
-        }
-
-        button.danger:active {
-            background: #cc0000;
-        }
-
-        /* График */
-        .chart-container {
-            margin-top: 12px;
-            height: 220px;
-        }
-
-        canvas {
-            max-height: 220px;
-            width: 100%;
-        }
-
-        /* История */
         .history-log {
             height: 120px;
             overflow-y: auto;
             font-size: 0.7rem;
-            font-family: 'SF Mono', 'Courier New', monospace;
+            font-family: monospace;
             background: rgba(0, 0, 0, 0.3);
             padding: 8px;
             border-radius: 12px;
-            -webkit-overflow-scrolling: touch;
         }
 
-        /* Дополнительные параметры */
-        .params-stats {
-            margin-top: 12px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            font-size: 0.75rem;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .params-stats div {
-            flex: 1;
-            text-align: center;
-        }
-
-        /* Для очень маленьких экранов */
-        @media (max-width: 380px) {
-            body {
-                padding: 8px;
-            }
-            
-            .card {
-                padding: 8px 6px;
-            }
-            
-            .card-value {
-                font-size: 1.2rem;
-            }
-            
-            .card-label {
-                font-size: 0.65rem;
-            }
-            
-            .panel {
-                padding: 12px;
-            }
-            
-            .risk-table {
-                font-size: 0.7rem;
+        @media (max-width: 768px) {
+            .network-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -311,135 +213,131 @@
 <body>
     <div class="container">
         <h1>⚡ Диспетчерский контроль ⚡</h1>
-        <div class="subtitle">Мониторинг | Риски | Рекомендации в реальном времени</div>
+        <div class="subtitle">Многоузловая сеть | Мониторинг каждой точки | Оценка рисков</div>
 
-        <!-- Дашборд - СЕТКА 2x3 -->
-        <div class="dashboard" id="dashboard">
-            <!-- Заполняется динамически -->
-        </div>
-
-        <!-- Основной контент -->
-        <div class="main-grid">
-            <!-- Текущие параметры -->
-            <div class="panel">
-                <h3>📊 Векторные параметры</h3>
-                <canvas id="gaugeChart" style="height: 200px; width: 100%;"></canvas>
-                <div class="params-stats" id="params-stats"></div>
-            </div>
-
-            <!-- Риски оборудования -->
-            <div class="panel">
-                <h3>⚠️ Оценка рисков</h3>
-                <div style="overflow-x: auto;">
-                    <table class="risk-table" id="risk-table">
-                        <thead>
-                            <tr><th>Оборудование</th><th>Вероятность</th><th>Ущерб</th><th>Риск</th></tr>
-                        </thead>
-                        <tbody id="risk-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Рекомендации -->
+        <!-- Схема сети (описание) -->
         <div class="panel">
-            <h3>💡 Рекомендации диспетчеру</h3>
+            <h3>🗺️ Схема электрической сети</h3>
+            <div style="font-size: 0.8rem; font-family: monospace; white-space: pre-wrap;">
+                ⚡ Ввод 110 кВ (ГПП)
+                <span style="color: #00b4d8;">│</span>
+                <span style="color: #00b4d8;">├──</span> 🔻 Трансформатор Т-1 (110/10 кВ, 10 МВА)
+                <span style="color: #00b4d8;">│</span>   <span style="color: #00b4d8;">├──</span> 🏭 Цех №1 (1 категория, ответственный)
+                <span style="color: #00b4d8;">│</span>   <span style="color: #00b4d8;">└──</span> 🏭 Цех №2 (2 категория, важный)
+                <span style="color: #00b4d8;">│</span>
+                <span style="color: #00b4d8;">└──</span> 🔻 Трансформатор Т-2 (110/10 кВ, 8 МВА) [изношен]
+                <span style="color: #00b4d8;">    └──</span> 🏭 Цех №3 (3 категория, бытовой)
+            </div>
+        </div>
+
+        <!-- Сетка узлов (динамическая) -->
+        <div class="network-grid" id="network-grid"></div>
+
+        <!-- Общие рекомендации -->
+        <div class="panel">
+            <h3>💡 Общие рекомендации диспетчеру</h3>
             <div id="recommendations"></div>
         </div>
 
-        <!-- История и управление -->
+        <!-- История -->
         <div class="panel">
             <h3>📜 История событий</h3>
             <div class="history-log" id="history-log"></div>
-            
             <div class="controls">
-                <button onclick="simulateCycle()">🔄 Цикл</button>
-                <button onclick="simulateEmergency()" class="danger">⚠️ Авария</button>
+                <button onclick="simulateCycle()">🔄 Цикл контроля</button>
+                <button onclick="simulateEmergency()" class="danger">⚠️ Симуляция аварии</button>
                 <button onclick="resetSystem()">🔄 Сброс</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Класс системы диспетчерского контроля
-        class DispatcherControlSystem {
-            constructor() {
-                this.history = [];
-                this.cycleCount = 0;
-                
-                // Состояние оборудования
-                this.equipmentState = {
-                    'Трансформатор Т-1': 0.85,
-                    'Линия ЛЭП-110кВ': 0.92,
-                    'Генератор Г-1': 0.78,
-                    'Ввод РУ-10кВ': 0.65,
-                    'Секция шин 1': 0.88
-                };
-                
-                // Категории важности
-                this.importance = {
-                    '1 категория': 10,
-                    '2 категория': 5,
-                    '3 категория': 1
-                };
+        // ============================================================
+        // КЛАСС УЗЛА СЕТИ (ОДНОЙ ТОЧКИ КОНТРОЛЯ)
+        // ============================================================
+        class NetworkNode {
+            constructor(id, name, type, parent, category, equipmentState) {
+                this.id = id;
+                this.name = name;
+                this.type = type;           // 'input', 'transformer', 'consumer'
+                this.parent = parent;
+                this.category = category;    // 1, 2, 3 — категория надежности
+                this.equipmentState = equipmentState;  // Индекс состояния 0..1
                 
                 // Текущие параметры
-                this.currentParams = this.generateNormalParams();
-            }
-            
-            generateNormalParams() {
-                return {
-                    voltage: 10.5 + (Math.random() - 0.5) * 0.3,
-                    current: 500 + (Math.random() - 0.5) * 50,
-                    frequency: 50 + (Math.random() - 0.5) * 0.1,
-                    power: 8.5 + (Math.random() - 0.5) * 1,
-                    temperature: 65 + (Math.random() - 0.5) * 10,
-                    powerFactor: 0.85 + (Math.random() - 0.5) * 0.1
+                this.params = {
+                    voltage: 10.5,
+                    current: 0,
+                    power: 0,
+                    temperature: 65
                 };
+                
+                // История для статистики
+                this.history = [];
             }
             
-            generateEmergencyParams() {
-                return {
-                    voltage: 8.2 + Math.random() * 1.5,
-                    current: 850 + Math.random() * 100,
-                    frequency: 48.5 + Math.random() * 1,
-                    power: 14 + Math.random() * 2,
-                    temperature: 95 + Math.random() * 15,
-                    powerFactor: 0.65 + Math.random() * 0.2
-                };
+            // Обновление параметров узла
+            updateParams(baseVoltage, loadFactor) {
+                // Падение напряжения от родителя (чем дальше, тем ниже)
+                const voltageDrop = this.parent ? 0.05 : 0;
+                this.params.voltage = baseVoltage * (1 - voltageDrop - Math.random() * 0.02);
+                
+                // Ток и мощность зависят от категории и типа
+                let baseCurrent = 0;
+                if (this.type === 'transformer') {
+                    baseCurrent = 400 + Math.random() * 200;
+                } else if (this.type === 'consumer') {
+                    baseCurrent = 150 + Math.random() * 150;
+                }
+                this.params.current = baseCurrent * loadFactor;
+                this.params.power = (this.params.current * this.params.voltage) / 1000;
+                
+                // Температура зависит от тока и состояния оборудования
+                const tempRise = (this.params.current / 600) * 30;
+                const stateTemp = (1 - this.equipmentState) * 15;
+                this.params.temperature = 40 + tempRise + stateTemp + Math.random() * 10;
+                
+                // Сохраняем историю
+                this.history.push({ ...this.params, timestamp: Date.now() });
+                if (this.history.length > 50) this.history.shift();
             }
             
-            detectAnomalies(params) {
+            // Выявление аномалий на узле
+            detectAnomalies() {
                 const anomalies = [];
                 
-                const thresholds = {
+                // Уставки для данного типа оборудования
+                const limits = {
                     voltage: { min: 9.5, max: 10.8 },
-                    current: { min: 300, max: 700 },
-                    frequency: { min: 49.5, max: 50.5 },
-                    temperature: { min: 30, max: 85 },
-                    powerFactor: { min: 0.75, max: 0.95 }
+                    current: this.type === 'transformer' ? { min: 200, max: 700 } : { min: 50, max: 350 },
+                    temperature: { min: 30, max: 85 }
                 };
                 
-                for (const [param, limits] of Object.entries(thresholds)) {
-                    const value = params[param];
-                    if (value < limits.min || value > limits.max) {
-                        const severity = (value < limits.min * 0.9 || value > limits.max * 1.1) ? 'high' : 'medium';
-                        anomalies.push({ param, value, severity });
-                    }
+                // Проверка по уставкам
+                if (this.params.voltage < limits.voltage.min || this.params.voltage > limits.voltage.max) {
+                    anomalies.push({ param: 'Напряжение', value: this.params.voltage, severity: 'high' });
+                }
+                if (this.params.current < limits.current.min || this.params.current > limits.current.max) {
+                    const severity = this.params.current > limits.current.max * 1.1 ? 'high' : 'medium';
+                    anomalies.push({ param: 'Ток', value: this.params.current, severity });
+                }
+                if (this.params.temperature < limits.temperature.min || this.params.temperature > limits.temperature.max) {
+                    const severity = this.params.temperature > limits.temperature.max * 1.05 ? 'high' : 'medium';
+                    anomalies.push({ param: 'Температура', value: this.params.temperature, severity });
                 }
                 
-                if (this.history.length > 5) {
-                    const historyValues = this.history.slice(-10).map(h => h.params.voltage);
-                    const mean = ss.mean(historyValues);
-                    const std = ss.standardDeviation(historyValues);
-                    const zScore = Math.abs((params.voltage - mean) / std);
+                // Статистический метод (Z-score)
+                if (this.history.length > 10) {
+                    const histCurrent = this.history.slice(-20).map(h => h.current);
+                    const mean = ss.mean(histCurrent);
+                    const std = ss.standardDeviation(histCurrent);
+                    const zScore = Math.abs((this.params.current - mean) / std);
                     
                     if (zScore > 2.5) {
                         anomalies.push({
-                            param: 'voltage (стат.)',
-                            value: params.voltage,
-                            severity: zScore > 3.5 ? 'high' : 'medium',
-                            zScore: zScore
+                            param: 'Ток (стат.)',
+                            value: this.params.current,
+                            severity: zScore > 3.5 ? 'high' : 'medium'
                         });
                     }
                 }
@@ -447,91 +345,158 @@
                 return anomalies;
             }
             
-            calculateFailureProbability(equipment, params) {
-                const state = this.equipmentState[equipment];
-                const stateFactor = 1 - state;
-                const loadFactor = params.current / 800;
-                const tempFactor = Math.max(0, (params.temperature - 40) / 100);
+            // Расчет вероятности отказа (логистическая функция)
+            calculateFailureProbability() {
+                const stateFactor = 1 - this.equipmentState;
+                const currentRatio = Math.min(1.2, this.params.current / 600);
+                const tempFactor = Math.max(0, (this.params.temperature - 40) / 100);
                 
-                const logit = -3.5 + 4.0 * stateFactor + 5.0 * loadFactor + 3.0 * tempFactor;
+                const logit = -3.5 + 4.0 * stateFactor + 5.0 * currentRatio + 3.0 * tempFactor;
                 const probability = 1 / (1 + Math.exp(-logit));
                 
                 return Math.min(0.99, Math.max(0.01, probability));
             }
             
-            calculateConsequence(equipment, params) {
-                const power = params.power;
+            // Расчет ущерба
+            calculateConsequence() {
+                const baseCost = 5000; // руб/МВт
+                const categoryFactor = { 1: 10, 2: 5, 3: 1 }[this.category] || 5;
+                const stateFactor = this.equipmentState < 0.7 ? 1.5 : 1.0;
                 
-                let category;
-                if (power > 10) category = '1 категория';
-                else if (power > 5) category = '2 категория';
-                else category = '3 категория';
-                
-                const importanceFactor = this.importance[category];
-                const equipmentFactor = this.equipmentState[equipment] < 0.7 ? 1.5 : 1.0;
-                const baseCost = 5000;
-                
-                return power * baseCost * importanceFactor * equipmentFactor;
+                return this.params.power * baseCost * categoryFactor * stateFactor;
             }
             
-            calculateRisks(params) {
-                const risks = [];
+            // Расчет общего риска
+            calculateRisk() {
+                const probability = this.calculateFailureProbability();
+                const consequence = this.calculateConsequence();
+                const risk = probability * consequence;
                 
-                for (const [equipment, state] of Object.entries(this.equipmentState)) {
-                    const probability = this.calculateFailureProbability(equipment, params);
-                    const consequence = this.calculateConsequence(equipment, params);
-                    const risk = probability * consequence;
-                    
+                let level = 'low';
+                if (risk > 8000) level = 'high';
+                else if (risk > 2000) level = 'medium';
+                
+                return { probability, consequence, risk, level };
+            }
+        }
+        
+        // ============================================================
+        // КЛАСС ВСЕЙ СЕТИ (СИСТЕМА ДИСПЕТЧЕРСКОГО КОНТРОЛЯ)
+        // ============================================================
+        class PowerNetwork {
+            constructor() {
+                this.nodes = [];
+                this.history = [];
+                this.cycleCount = 0;
+                this.initNetwork();
+            }
+            
+            initNetwork() {
+                // Создаем узлы сети с реальными характеристиками
+                this.nodes = [
+                    new NetworkNode('input', 'Главный ввод 110 кВ', 'input', null, 1, 0.95),
+                    new NetworkNode('t1', 'Трансформатор Т-1 (110/10кВ)', 'transformer', 'input', 1, 0.88),
+                    new NetworkNode('t2', 'Трансформатор Т-2 (110/10кВ)', 'transformer', 'input', 1, 0.65), // Изношен!
+                    new NetworkNode('shop1', 'Цех №1 (Прессовый)', 'consumer', 't1', 1, 0.85),
+                    new NetworkNode('shop2', 'Цех №2 (Сборочный)', 'consumer', 't1', 2, 0.82),
+                    new NetworkNode('shop3', 'Цех №3 (Административный)', 'consumer', 't2', 3, 0.78)
+                ];
+            }
+            
+            // Обновление параметров всех узлов
+            updateAllNodes(isEmergency) {
+                const loadFactor = isEmergency ? 1.4 : (0.7 + Math.random() * 0.6);
+                const baseVoltage = isEmergency ? 9.8 : 10.5;
+                
+                for (const node of this.nodes) {
+                    node.updateParams(baseVoltage, loadFactor);
+                }
+            }
+            
+            // Сбор аномалий со всей сети
+            collectAnomalies() {
+                const allAnomalies = [];
+                for (const node of this.nodes) {
+                    const anomalies = node.detectAnomalies();
+                    if (anomalies.length > 0) {
+                        allAnomalies.push({
+                            node: node.name,
+                            nodeId: node.id,
+                            anomalies: anomalies
+                        });
+                    }
+                }
+                return allAnomalies;
+            }
+            
+            // Сбор рисков со всей сети
+            collectRisks() {
+                const risks = [];
+                for (const node of this.nodes) {
+                    const riskData = node.calculateRisk();
                     risks.push({
-                        equipment,
-                        probability,
-                        consequence,
-                        risk,
-                        level: risk > 5000 ? 'high' : (risk > 1000 ? 'medium' : 'low')
+                        nodeId: node.id,
+                        nodeName: node.name,
+                        nodeType: node.type,
+                        category: node.category,
+                        equipmentState: node.equipmentState,
+                        params: { ...node.params },
+                        ...riskData
                     });
                 }
-                
                 return risks.sort((a, b) => b.risk - a.risk);
             }
             
-            generateRecommendations(anomalies, risks, params) {
+            // Генерация рекомендаций по всей сети
+            generateRecommendations(anomalies, risks) {
                 const recommendations = [];
                 
-                const criticalAnomalies = anomalies.filter(a => a.severity === 'high');
-                if (criticalAnomalies.length > 0) {
+                // 1. Критические аномалии
+                const criticalNodes = anomalies.filter(a => 
+                    a.anomalies.some(an => an.severity === 'high')
+                );
+                for (const node of criticalNodes) {
                     recommendations.push({
                         priority: 'КРИТИЧЕСКИЙ',
-                        text: `АВАРИЯ: ${criticalAnomalies.map(a => a.param).join(', ')}. Немедленное отключение!`,
-                        action: 'emergency_shutdown',
+                        node: node.node,
+                        text: `АВАРИЙНОЕ ОТКЛОНЕНИЕ на ${node.node}: ${node.anomalies.filter(a => a.severity === 'high').map(a => a.param).join(', ')}`,
+                        action: 'НЕМЕДЛЕННОЕ ОТКЛЮЧЕНИЕ',
                         timeframe: 'НЕМЕДЛЕННО'
                     });
                 }
                 
+                // 2. Высокие риски
                 const highRisks = risks.filter(r => r.level === 'high');
-                if (highRisks.length > 0) {
+                for (const risk of highRisks) {
                     recommendations.push({
                         priority: 'ВЫСОКИЙ',
-                        text: `Снизить нагрузку на ${highRisks[0].equipment} на 30% (риск ${(highRisks[0].probability * 100).toFixed(1)}%)`,
-                        action: 'load_shedding',
+                        node: risk.nodeName,
+                        text: `${risk.nodeName}: Снизить нагрузку на 30%. Вероятность отказа ${(risk.probability * 100).toFixed(1)}%`,
+                        action: 'СНИЖЕНИЕ НАГРУЗКИ',
                         timeframe: '10 минут'
                     });
                 }
                 
-                const mediumRisks = risks.filter(r => r.level === 'medium');
-                if (mediumRisks.length > 0 && highRisks.length === 0) {
+                // 3. Средние риски
+                const mediumRisks = risks.filter(r => r.level === 'medium' && !highRisks.includes(r));
+                for (const risk of mediumRisks.slice(0, 2)) {
                     recommendations.push({
                         priority: 'СРЕДНИЙ',
-                        text: `Резерв для ${mediumRisks[0].equipment}`,
-                        action: 'prepare_reserve',
+                        node: risk.nodeName,
+                        text: `${risk.nodeName}: Подготовить резерв. Состояние оборудования ${Math.round(risk.equipmentState * 100)}%`,
+                        action: 'ПОДГОТОВКА РЕЗЕРВА',
                         timeframe: '1 час'
                     });
                 }
                 
-                if (params.power > 10) {
+                // 4. Перегрузка сети
+                const totalPower = risks.reduce((sum, r) => sum + r.params.power, 0);
+                if (totalPower > 35) {
                     recommendations.push({
                         priority: 'РЕЖИМ',
-                        text: `Перегрузка (${params.power.toFixed(1)} МВт). Отключить 3-категорийных потребителей`,
-                        action: 'load_management',
+                        node: 'Вся сеть',
+                        text: `Общая нагрузка ${totalPower.toFixed(1)} МВт. Рекомендуется отключение 3-категорийных потребителей`,
+                        action: 'УПРАВЛЕНИЕ НАГРУЗКОЙ',
                         timeframe: '30 минут'
                     });
                 }
@@ -539,30 +504,27 @@
                 if (recommendations.length === 0) {
                     recommendations.push({
                         priority: 'ИНФОРМАЦИЯ',
-                        text: 'Режим в норме. Мониторинг продолжается.',
-                        action: 'monitor',
-                        timeframe: 'наблюдение'
+                        node: 'Система',
+                        text: 'Все параметры в норме. Мониторинг продолжается.',
+                        action: 'НАБЛЮДЕНИЕ',
+                        timeframe: 'постоянно'
                     });
                 }
                 
                 return recommendations;
             }
             
+            // Основной цикл контроля
             runControlCycle(isEmergency = false) {
-                if (isEmergency) {
-                    this.currentParams = this.generateEmergencyParams();
-                } else {
-                    this.currentParams = this.generateNormalParams();
-                }
+                this.updateAllNodes(isEmergency);
                 
-                const anomalies = this.detectAnomalies(this.currentParams);
-                const risks = this.calculateRisks(this.currentParams);
-                const recommendations = this.generateRecommendations(anomalies, risks, this.currentParams);
+                const anomalies = this.collectAnomalies();
+                const risks = this.collectRisks();
+                const recommendations = this.generateRecommendations(anomalies, risks);
                 
                 const cycleData = {
                     timestamp: new Date(),
                     cycle: ++this.cycleCount,
-                    params: { ...this.currentParams },
                     anomalies,
                     risks,
                     recommendations,
@@ -570,10 +532,7 @@
                 };
                 
                 this.history.push(cycleData);
-                
-                if (this.history.length > 50) {
-                    this.history.shift();
-                }
+                if (this.history.length > 50) this.history.shift();
                 
                 return cycleData;
             }
@@ -583,181 +542,145 @@
             }
         }
         
-        let dispatcherSystem = new DispatcherControlSystem();
+        // ============================================================
+        // UI КОМПОНЕНТЫ
+        // ============================================================
+        
+        let network = new PowerNetwork();
         let currentCycleData = null;
-        let chart = null;
         
-        function updateDashboard(params, anomalies) {
-            const dashboard = document.getElementById('dashboard');
-            const hasEmergency = anomalies.some(a => a.severity === 'high');
-            
-            // Форматирование значений с единицами измерения
-            const cards = [
-                { label: 'Напряжение', value: params.voltage.toFixed(2), unit: 'кВ', 
-                  status: params.voltage < 9.5 || params.voltage > 10.8 ? 'danger' : 'normal' },
-                { label: 'Ток', value: params.current.toFixed(0), unit: 'А',
-                  status: params.current > 700 ? 'danger' : (params.current > 600 ? 'warning' : 'normal') },
-                { label: 'Частота', value: params.frequency.toFixed(2), unit: 'Гц',
-                  status: params.frequency < 49.5 || params.frequency > 50.5 ? 'danger' : 'normal' },
-                { label: 'Мощность', value: params.power.toFixed(2), unit: 'МВт',
-                  status: params.power > 10 ? 'warning' : 'normal' },
-                { label: 'Температура', value: params.temperature.toFixed(1), unit: '°C',
-                  status: params.temperature > 85 ? 'danger' : (params.temperature > 75 ? 'warning' : 'normal') },
-                { label: 'cos φ', value: params.powerFactor.toFixed(2), unit: '',
-                  status: params.powerFactor < 0.75 ? 'danger' : (params.powerFactor < 0.85 ? 'warning' : 'normal') }
-            ];
-            
-            dashboard.innerHTML = cards.map(card => `
-                <div class="card">
-                    <div class="card-label">${card.label}</div>
-                    <div class="card-value ${card.status}">${card.value}</div>
-                    <div class="card-unit">${card.unit}</div>
-                </div>
-            `).join('');
+        function getStatusClass(value, thresholds) {
+            if (value < thresholds.min || value > thresholds.max) return 'danger';
+            if ((thresholds.warningMin && value < thresholds.warningMin) || 
+                (thresholds.warningMax && value > thresholds.warningMax)) return 'warning';
+            return 'normal';
         }
         
-        function updateParamsStats(params) {
-            const container = document.getElementById('params-stats');
-            const powerPercent = (params.power / 12 * 100).toFixed(0);
-            const reservePower = (12 - params.power).toFixed(2);
+        function renderNetwork(cycleData) {
+            const container = document.getElementById('network-grid');
+            const risks = cycleData.risks;
+            const anomalies = cycleData.anomalies;
             
-            container.innerHTML = `
-                <div>⚡ ${params.power.toFixed(2)} МВт</div>
-                <div>📈 ${powerPercent}% нагрузки</div>
-                <div>🔋 ${reservePower} МВт резерв</div>
-                <div>🎯 cos φ = ${params.powerFactor.toFixed(2)}</div>
-            `;
+            // Создаем карту аномалий по узлам
+            const anomalyMap = new Map();
+            for (const a of anomalies) {
+                anomalyMap.set(a.nodeId, a.anomalies);
+            }
+            
+            container.innerHTML = risks.map(risk => {
+                const nodeAnomalies = anomalyMap.get(risk.nodeId) || [];
+                const hasCritical = nodeAnomalies.some(a => a.severity === 'high');
+                const hasWarning = nodeAnomalies.some(a => a.severity === 'medium');
+                
+                let alertClass = '';
+                if (hasCritical) alertClass = 'alert';
+                else if (hasWarning || risk.level === 'high') alertClass = 'warning';
+                
+                return `
+                    <div class="node-card ${alertClass}">
+                        <div class="node-header">
+                            <span class="node-name">${risk.nodeName}</span>
+                            <span class="node-badge ${risk.nodeType === 'transformer' ? 'transformer' : (risk.nodeType === 'consumer' ? 'consumer' : 'input')}">
+                                ${risk.nodeType === 'transformer' ? '🔻 Трансформатор' : (risk.nodeType === 'consumer' ? '🏭 Потребитель' : '⚡ Ввод')}
+                                ${risk.category ? ` | ${risk.category} кат.` : ''}
+                            </span>
+                        </div>
+                        <div class="node-params">
+                            <div class="param">
+                                <div class="param-label">Напряжение</div>
+                                <div class="param-value ${risk.params.voltage < 9.5 || risk.params.voltage > 10.8 ? 'danger' : 'normal'}">
+                                    ${risk.params.voltage.toFixed(2)} кВ
+                                </div>
+                            </div>
+                            <div class="param">
+                                <div class="param-label">Ток</div>
+                                <div class="param-value ${risk.params.current > 600 ? 'danger' : (risk.params.current > 450 ? 'warning' : 'normal')}">
+                                    ${risk.params.current.toFixed(0)} А
+                                </div>
+                            </div>
+                            <div class="param">
+                                <div class="param-label">Мощность</div>
+                                <div class="param-value ${risk.params.power > 8 ? 'warning' : 'normal'}">
+                                    ${risk.params.power.toFixed(2)} МВт
+                                </div>
+                            </div>
+                            <div class="param">
+                                <div class="param-label">Температура</div>
+                                <div class="param-value ${risk.params.temperature > 85 ? 'danger' : (risk.params.temperature > 75 ? 'warning' : 'normal')}">
+                                    ${risk.params.temperature.toFixed(1)} °C
+                                </div>
+                            </div>
+                        </div>
+                        <div class="node-risk risk-${risk.level}">
+                            ${nodeAnomalies.length > 0 ? `⚠️ Аномалии: ${nodeAnomalies.map(a => a.param).join(', ')}<br>` : ''}
+                            📊 Риск: ${Math.round(risk.risk).toLocaleString()} руб | 
+                            Вероятность: ${(risk.probability * 100).toFixed(1)}% | 
+                            Состояние: ${Math.round(risk.equipmentState * 100)}%
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
         
-        function updateRiskTable(risks) {
-            const tbody = document.getElementById('risk-body');
-            tbody.innerHTML = risks.map(risk => `
-                <tr class="risk-${risk.level}">
-                    <td>${risk.equipment}</td>
-                    <td>${(risk.probability * 100).toFixed(1)}%</td>
-                    <td>${Math.round(risk.consequence).toLocaleString()} руб</td>
-                    <td>${Math.round(risk.risk).toLocaleString()} </td>
-                </tr>
-            `).join('');
-        }
-        
-        function updateRecommendations(recommendations) {
+        function updateRecommendations(cycleData) {
             const container = document.getElementById('recommendations');
-            container.innerHTML = recommendations.map(rec => `
-                <div class="recommendation-item recommendation-${rec.priority.toLowerCase()}">
-                    <strong>[${rec.priority}]</strong> ${rec.text}<br>
-                    <small>⏱️ ${rec.timeframe}</small>
+            container.innerHTML = cycleData.recommendations.map(rec => `
+                <div class="recommendation-item ${rec.priority === 'КРИТИЧЕСКИЙ' ? 'recommendation-critical' : ''}">
+                    <strong>[${rec.priority}] ${rec.node}</strong><br>
+                    ${rec.text}<br>
+                    <small>🎯 Действие: ${rec.action} | ⏱️ ${rec.timeframe}</small>
                 </div>
             `).join('');
         }
         
-        function updateHistory(history) {
+        function updateHistory() {
             const log = document.getElementById('history-log');
-            const recentHistory = history.slice(-10).reverse();
-            log.innerHTML = recentHistory.map(entry => `
-                <div style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px;">
-                    <span>${entry.timestamp.toLocaleTimeString().slice(0,5)}</span>
-                    <span>⚡${entry.params.power.toFixed(1)}МВт</span>
-                    <span>${entry.isEmergency ? '🔥 АВАРИЯ' : '✅ НОРМА'}</span>
-                    <span>⚠️${entry.anomalies.length}</span>
-                </div>
-            `).join('');
+            const history = network.getHistory();
+            const recentHistory = history.slice(-15).reverse();
+            
+            log.innerHTML = recentHistory.map(entry => {
+                const criticalCount = entry.anomalies.filter(a => 
+                    a.anomalies.some(an => an.severity === 'high')
+                ).length;
+                const totalAnomalies = entry.anomalies.reduce((sum, a) => sum + a.anomalies.length, 0);
+                
+                return `
+                    <div style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px;">
+                        <span>${entry.timestamp.toLocaleTimeString().slice(0,5)}</span>
+                        <span>Цикл #${entry.cycle}</span>
+                        <span>${entry.isEmergency ? '🔥 АВАРИЙНЫЙ' : '✅ НОРМА'}</span>
+                        <span>⚠️ Аномалий: ${totalAnomalies}</span>
+                        <span>🔴 Критических: ${criticalCount}</span>
+                    </div>
+                `;
+            }).join('');
         }
         
         function updateUI(cycleData) {
-            updateDashboard(cycleData.params, cycleData.anomalies);
-            updateParamsStats(cycleData.params);
-            updateRiskTable(cycleData.risks);
-            updateRecommendations(cycleData.recommendations);
-            updateHistory(dispatcherSystem.getHistory());
-            
-            if (chart) {
-                const normVoltage = Math.min(120, (cycleData.params.voltage / 12) * 100);
-                const normCurrent = Math.min(120, (cycleData.params.current / 900) * 100);
-                const normFreq = Math.min(120, (cycleData.params.frequency / 52) * 100);
-                const normPower = Math.min(120, (cycleData.params.power / 15) * 100);
-                const normTemp = Math.min(120, (cycleData.params.temperature / 100) * 100);
-                
-                chart.data.datasets[0].data = [normVoltage, normCurrent, normFreq, normPower, normTemp];
-                chart.update();
-            }
+            renderNetwork(cycleData);
+            updateRecommendations(cycleData);
+            updateHistory();
         }
         
         function simulateCycle() {
-            currentCycleData = dispatcherSystem.runControlCycle(false);
+            currentCycleData = network.runControlCycle(false);
             updateUI(currentCycleData);
         }
         
         function simulateEmergency() {
-            currentCycleData = dispatcherSystem.runControlCycle(true);
+            currentCycleData = network.runControlCycle(true);
             updateUI(currentCycleData);
         }
         
         function resetSystem() {
-            dispatcherSystem = new DispatcherControlSystem();
-            currentCycleData = dispatcherSystem.runControlCycle(false);
+            network = new PowerNetwork();
+            currentCycleData = network.runControlCycle(false);
             updateUI(currentCycleData);
         }
         
-        function initChart() {
-            const ctx = document.getElementById('gaugeChart').getContext('2d');
-            chart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['Напряжение', 'Ток', 'Частота', 'Мощность', 'Температура'],
-                    datasets: [{
-                        label: 'Текущие параметры',
-                        data: [87, 65, 96, 75, 70],
-                        backgroundColor: 'rgba(0, 180, 216, 0.2)',
-                        borderColor: '#00b4d8',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#00b4d8',
-                        pointBorderColor: '#fff',
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }, {
-                        label: 'Норма',
-                        data: [88, 56, 96, 57, 65],
-                        backgroundColor: 'rgba(81, 207, 102, 0.05)',
-                        borderColor: '#51cf66',
-                        borderWidth: 1.5,
-                        borderDash: [5, 5],
-                        fill: false,
-                        pointRadius: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#aaa', font: { size: 10 } }
-                        }
-                    },
-                    scales: {
-                        r: {
-                            beginAtZero: true,
-                            max: 120,
-                            ticks: {
-                                stepSize: 30,
-                                backdropColor: 'transparent',
-                                color: '#aaa',
-                                font: { size: 9 }
-                            },
-                            grid: { color: 'rgba(255,255,255,0.1)' }
-                        }
-                    }
-                }
-            });
-        }
-        
-        initChart();
+        // Запуск
         simulateCycle();
-        
-        setInterval(() => {
-            simulateCycle();
-        }, 10000);
+        setInterval(() => simulateCycle(), 15000);
     </script>
 </body>
 </html>
