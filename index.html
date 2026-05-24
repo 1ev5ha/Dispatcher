@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Диспетчерский контроль - Многоузловая сеть</title>
-    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.js"></script>
+    <title>Диспетчерский контроль | Электроснабжение 10 кВ</title>
     <script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -15,10 +13,10 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
             color: #eee;
-            padding: 12px;
+            padding: 16px;
             min-height: 100vh;
         }
 
@@ -29,44 +27,61 @@
 
         h1 {
             text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 6px;
+            font-size: 1.6rem;
+            margin-bottom: 4px;
             color: #00b4d8;
         }
 
         .subtitle {
             text-align: center;
-            color: #aaa;
+            color: #888;
             font-size: 0.8rem;
             margin-bottom: 20px;
         }
 
-        /* Сетка для узлов сети */
+        /* Схема сети в виде дерева */
+        .network-scheme {
+            background: rgba(0,0,0,0.4);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+        }
+
+        .scheme-tree {
+            white-space: pre;
+            color: #00b4d8;
+            line-height: 1.6;
+        }
+
+        /* Сетка узлов */
         .network-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 14px;
             margin-bottom: 20px;
         }
 
         /* Карточка узла */
         .node-card {
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.55);
             border-radius: 16px;
             padding: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
         .node-card.alert {
             border: 2px solid #ff4444;
-            background: rgba(255, 68, 68, 0.1);
+            background: rgba(255, 68, 68, 0.15);
             animation: pulseBorder 1s infinite;
         }
 
         .node-card.warning {
             border: 2px solid #ffd43b;
-            background: rgba(255, 212, 59, 0.05);
+            background: rgba(255, 212, 59, 0.08);
         }
 
         @keyframes pulseBorder {
@@ -78,9 +93,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .node-name {
@@ -90,26 +105,57 @@
         }
 
         .node-badge {
-            font-size: 0.7rem;
-            padding: 2px 8px;
+            font-size: 0.65rem;
+            padding: 3px 10px;
             border-radius: 20px;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0,0,0,0.6);
         }
 
-        .node-badge.transformer { background: #ff6b6b; color: white; }
-        .node-badge.consumer { background: #51cf66; color: white; }
-        .node-badge.input { background: #ffd43b; color: #1a1a2e; }
+        .node-badge.transformer { background: #e67e22; color: white; }
+        .node-badge.substation { background: #2c3e66; color: white; }
+        .node-badge.consumer1 { background: #e74c3c; color: white; }
+        .node-badge.consumer2 { background: #f39c12; color: white; }
+        .node-badge.consumer3 { background: #27ae60; color: white; }
+        .node-badge.bus { background: #3498db; color: white; }
 
+        /* Список оборудования */
+        .equipment-list {
+            margin: 10px 0;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 8px;
+        }
+
+        .equipment-item {
+            display: inline-block;
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            margin: 2px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .equipment-item.bad {
+            background: rgba(255,68,68,0.4);
+            color: #ff8888;
+        }
+
+        .equipment-item.warning-eq {
+            background: rgba(255,212,59,0.3);
+            color: #ffd43b;
+        }
+
+        /* Параметры узла */
         .node-params {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 6px;
+            margin: 10px 0;
         }
 
         .param {
             text-align: center;
-            padding: 6px;
+            padding: 5px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
         }
@@ -117,11 +163,10 @@
         .param-label {
             font-size: 0.6rem;
             color: #aaa;
-            text-transform: uppercase;
         }
 
         .param-value {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
         }
 
@@ -134,14 +179,14 @@
             padding: 8px;
             border-radius: 8px;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
-        .risk-low { background: rgba(81, 207, 102, 0.2); color: #51cf66; }
-        .risk-medium { background: rgba(255, 212, 59, 0.2); color: #ffd43b; }
-        .risk-high { background: rgba(255, 68, 68, 0.2); color: #ff6b6b; }
+        .risk-low { background: rgba(81,207,102,0.2); color: #51cf66; }
+        .risk-medium { background: rgba(255,212,59,0.2); color: #ffd43b; }
+        .risk-high { background: rgba(255,68,68,0.2); color: #ff6b6b; }
 
-        /* Остальные стили как в предыдущей версии */
+        /* Панели */
         .panel {
             background: rgba(0, 0, 0, 0.5);
             border-radius: 16px;
@@ -186,12 +231,14 @@
             border-radius: 10px;
             cursor: pointer;
             font-size: 0.85rem;
+            font-weight: 500;
             flex: 1;
             min-width: 100px;
+            transition: 0.2s;
         }
 
-        button.danger { background: #ff4444; }
         button:active { transform: scale(0.97); }
+        button.danger { background: #e74c3c; }
 
         .history-log {
             height: 120px;
@@ -203,484 +250,467 @@
             border-radius: 12px;
         }
 
-        @media (max-width: 768px) {
-            .network-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 700px) {
+            .network-grid { grid-template-columns: 1fr; }
+            body { padding: 10px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>⚡ Диспетчерский контроль ⚡</h1>
-        <div class="subtitle">Многоузловая сеть | Мониторинг каждой точки | Оценка рисков</div>
+<div class="container">
+    <h1>⚡ Диспетчерский контроль энергоснабжения ⚡</h1>
+    <div class="subtitle">Схема 10 кВ | Мониторинг оборудования | Оценка рисков</div>
 
-        <!-- Схема сети (описание) -->
-        <div class="panel">
-            <h3>🗺️ Схема электрической сети</h3>
-            <div style="font-size: 0.8rem; font-family: monospace; white-space: pre-wrap;">
-                ⚡ Ввод 110 кВ (ГПП)
-                <span style="color: #00b4d8;">│</span>
-                <span style="color: #00b4d8;">├──</span> 🔻 Трансформатор Т-1 (110/10 кВ, 10 МВА)
-                <span style="color: #00b4d8;">│</span>   <span style="color: #00b4d8;">├──</span> 🏭 Цех №1 (1 категория, ответственный)
-                <span style="color: #00b4d8;">│</span>   <span style="color: #00b4d8;">└──</span> 🏭 Цех №2 (2 категория, важный)
-                <span style="color: #00b4d8;">│</span>
-                <span style="color: #00b4d8;">└──</span> 🔻 Трансформатор Т-2 (110/10 кВ, 8 МВА) [изношен]
-                <span style="color: #00b4d8;">    └──</span> 🏭 Цех №3 (3 категория, бытовой)
-            </div>
-        </div>
-
-        <!-- Сетка узлов (динамическая) -->
-        <div class="network-grid" id="network-grid"></div>
-
-        <!-- Общие рекомендации -->
-        <div class="panel">
-            <h3>💡 Общие рекомендации диспетчеру</h3>
-            <div id="recommendations"></div>
-        </div>
-
-        <!-- История -->
-        <div class="panel">
-            <h3>📜 История событий</h3>
-            <div class="history-log" id="history-log"></div>
-            <div class="controls">
-                <button onclick="simulateCycle()">🔄 Цикл контроля</button>
-                <button onclick="simulateEmergency()" class="danger">⚠️ Симуляция аварии</button>
-                <button onclick="resetSystem()">🔄 Сброс</button>
-            </div>
+    <!-- Схема сети -->
+    <div class="network-scheme">
+        <div class="scheme-tree">
+            ⚡ Ввод 110 кВ (энергосистема)<br>
+            │<br>
+            ├── 🔻 ГПП (2×10 МВА)<br>
+            │   ├── 🔹 Секция шин №1 (10 кВ)<br>
+            │   │   ├── 🏭 Цех №1 (1 кат) — КТП-1<br>
+            │   │   ├── 🏭 Цех №2 (2 кат) — КТП-2<br>
+            │   │   └── 🖨️ Компрессор №1 (10 кВ)<br>
+            │   └── 🔹 Секция шин №2 (10 кВ)<br>
+            │       ├── 🏭 Цех №3 (1 кат) — КТП-3<br>
+            │       ├── 🏭 Цех №4 (3 кат) — КТП-4<br>
+            │       └── 🖨️ Компрессор №2 (10 кВ)<br>
+            └── 🔻 Резервный ввод 110 кВ
         </div>
     </div>
 
-    <script>
-        // ============================================================
-        // КЛАСС УЗЛА СЕТИ (ОДНОЙ ТОЧКИ КОНТРОЛЯ)
-        // ============================================================
-        class NetworkNode {
-            constructor(id, name, type, parent, category, equipmentState) {
-                this.id = id;
-                this.name = name;
-                this.type = type;           // 'input', 'transformer', 'consumer'
-                this.parent = parent;
-                this.category = category;    // 1, 2, 3 — категория надежности
-                this.equipmentState = equipmentState;  // Индекс состояния 0..1
-                
-                // Текущие параметры
-                this.params = {
-                    voltage: 10.5,
-                    current: 0,
-                    power: 0,
-                    temperature: 65
-                };
-                
-                // История для статистики
-                this.history = [];
-            }
+    <!-- Карточки узлов -->
+    <div class="network-grid" id="network-grid"></div>
+
+    <!-- Рекомендации -->
+    <div class="panel">
+        <h3>💡 Рекомендации диспетчеру</h3>
+        <div id="recommendations"></div>
+    </div>
+
+    <!-- История и управление -->
+    <div class="panel">
+        <h3>📜 История событий</h3>
+        <div class="history-log" id="history-log"></div>
+        <div class="controls">
+            <button onclick="simulateCycle()">🔄 Цикл контроля</button>
+            <button onclick="simulateEmergency()" class="danger">⚠️ Аварийный режим</button>
+            <button onclick="resetSystem()">🔄 Сброс</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // КЛАСС ОБОРУДОВАНИЯ (из условных обозначений)
+    // ============================================================
+    class Equipment {
+        constructor(type, name, params) {
+            this.type = type;        // transformer, VT, CT, ОПН, meter, UKRM_fast, UKRM_step, compressor, KTP
+            this.name = name;
+            this.isOperational = true;
+            this.params = params;
+            this.alarmCount = 0;
+        }
+
+        // Проверка состояния оборудования на основе текущих параметров узла
+        checkHealth(nodeParams) {
+            const issues = [];
             
-            // Обновление параметров узла
-            updateParams(baseVoltage, loadFactor) {
-                // Падение напряжения от родителя (чем дальше, тем ниже)
-                const voltageDrop = this.parent ? 0.05 : 0;
-                this.params.voltage = baseVoltage * (1 - voltageDrop - Math.random() * 0.02);
-                
-                // Ток и мощность зависят от категории и типа
-                let baseCurrent = 0;
-                if (this.type === 'transformer') {
-                    baseCurrent = 400 + Math.random() * 200;
-                } else if (this.type === 'consumer') {
-                    baseCurrent = 150 + Math.random() * 150;
-                }
-                this.params.current = baseCurrent * loadFactor;
-                this.params.power = (this.params.current * this.params.voltage) / 1000;
-                
-                // Температура зависит от тока и состояния оборудования
-                const tempRise = (this.params.current / 600) * 30;
-                const stateTemp = (1 - this.equipmentState) * 15;
-                this.params.temperature = 40 + tempRise + stateTemp + Math.random() * 10;
-                
-                // Сохраняем историю
-                this.history.push({ ...this.params, timestamp: Date.now() });
-                if (this.history.length > 50) this.history.shift();
-            }
-            
-            // Выявление аномалий на узле
-            detectAnomalies() {
-                const anomalies = [];
-                
-                // Уставки для данного типа оборудования
-                const limits = {
-                    voltage: { min: 9.5, max: 10.8 },
-                    current: this.type === 'transformer' ? { min: 200, max: 700 } : { min: 50, max: 350 },
-                    temperature: { min: 30, max: 85 }
-                };
-                
-                // Проверка по уставкам
-                if (this.params.voltage < limits.voltage.min || this.params.voltage > limits.voltage.max) {
-                    anomalies.push({ param: 'Напряжение', value: this.params.voltage, severity: 'high' });
-                }
-                if (this.params.current < limits.current.min || this.params.current > limits.current.max) {
-                    const severity = this.params.current > limits.current.max * 1.1 ? 'high' : 'medium';
-                    anomalies.push({ param: 'Ток', value: this.params.current, severity });
-                }
-                if (this.params.temperature < limits.temperature.min || this.params.temperature > limits.temperature.max) {
-                    const severity = this.params.temperature > limits.temperature.max * 1.05 ? 'high' : 'medium';
-                    anomalies.push({ param: 'Температура', value: this.params.temperature, severity });
-                }
-                
-                // Статистический метод (Z-score)
-                if (this.history.length > 10) {
-                    const histCurrent = this.history.slice(-20).map(h => h.current);
-                    const mean = ss.mean(histCurrent);
-                    const std = ss.standardDeviation(histCurrent);
-                    const zScore = Math.abs((this.params.current - mean) / std);
-                    
-                    if (zScore > 2.5) {
-                        anomalies.push({
-                            param: 'Ток (стат.)',
-                            value: this.params.current,
-                            severity: zScore > 3.5 ? 'high' : 'medium'
-                        });
+            switch(this.type) {
+                case 'transformer':
+                    if (nodeParams.temperature > this.params.maxTemp) {
+                        issues.push(`Сработало реле перегрева трансформатора ${this.name} (${nodeParams.temperature.toFixed(0)}°C > ${this.params.maxTemp}°C)`);
                     }
-                }
-                
-                return anomalies;
-            }
-            
-            // Расчет вероятности отказа (логистическая функция)
-            calculateFailureProbability() {
-                const stateFactor = 1 - this.equipmentState;
-                const currentRatio = Math.min(1.2, this.params.current / 600);
-                const tempFactor = Math.max(0, (this.params.temperature - 40) / 100);
-                
-                const logit = -3.5 + 4.0 * stateFactor + 5.0 * currentRatio + 3.0 * tempFactor;
-                const probability = 1 / (1 + Math.exp(-logit));
-                
-                return Math.min(0.99, Math.max(0.01, probability));
-            }
-            
-            // Расчет ущерба
-            calculateConsequence() {
-                const baseCost = 5000; // руб/МВт
-                const categoryFactor = { 1: 10, 2: 5, 3: 1 }[this.category] || 5;
-                const stateFactor = this.equipmentState < 0.7 ? 1.5 : 1.0;
-                
-                return this.params.power * baseCost * categoryFactor * stateFactor;
-            }
-            
-            // Расчет общего риска
-            calculateRisk() {
-                const probability = this.calculateFailureProbability();
-                const consequence = this.calculateConsequence();
-                const risk = probability * consequence;
-                
-                let level = 'low';
-                if (risk > 8000) level = 'high';
-                else if (risk > 2000) level = 'medium';
-                
-                return { probability, consequence, risk, level };
-            }
-        }
-        
-        // ============================================================
-        // КЛАСС ВСЕЙ СЕТИ (СИСТЕМА ДИСПЕТЧЕРСКОГО КОНТРОЛЯ)
-        // ============================================================
-        class PowerNetwork {
-            constructor() {
-                this.nodes = [];
-                this.history = [];
-                this.cycleCount = 0;
-                this.initNetwork();
-            }
-            
-            initNetwork() {
-                // Создаем узлы сети с реальными характеристиками
-                this.nodes = [
-                    new NetworkNode('input', 'Главный ввод 110 кВ', 'input', null, 1, 0.95),
-                    new NetworkNode('t1', 'Трансформатор Т-1 (110/10кВ)', 'transformer', 'input', 1, 0.88),
-                    new NetworkNode('t2', 'Трансформатор Т-2 (110/10кВ)', 'transformer', 'input', 1, 0.65), // Изношен!
-                    new NetworkNode('shop1', 'Цех №1 (Прессовый)', 'consumer', 't1', 1, 0.85),
-                    new NetworkNode('shop2', 'Цех №2 (Сборочный)', 'consumer', 't1', 2, 0.82),
-                    new NetworkNode('shop3', 'Цех №3 (Административный)', 'consumer', 't2', 3, 0.78)
-                ];
-            }
-            
-            // Обновление параметров всех узлов
-            updateAllNodes(isEmergency) {
-                const loadFactor = isEmergency ? 1.4 : (0.7 + Math.random() * 0.6);
-                const baseVoltage = isEmergency ? 9.8 : 10.5;
-                
-                for (const node of this.nodes) {
-                    node.updateParams(baseVoltage, loadFactor);
-                }
-            }
-            
-            // Сбор аномалий со всей сети
-            collectAnomalies() {
-                const allAnomalies = [];
-                for (const node of this.nodes) {
-                    const anomalies = node.detectAnomalies();
-                    if (anomalies.length > 0) {
-                        allAnomalies.push({
-                            node: node.name,
-                            nodeId: node.id,
-                            anomalies: anomalies
-                        });
+                    if (nodeParams.current > this.params.maxCurrent) {
+                        issues.push(`Перегрузка трансформатора ${this.name}: ${nodeParams.current.toFixed(0)}A > ${this.params.maxCurrent}A`);
                     }
-                }
-                return allAnomalies;
+                    break;
+                case 'VT':
+                    if (this.params.fuseStatus === false) {
+                        issues.push(`Перегорел предохранитель измерительного трансформатора напряжения ${this.name}`);
+                    }
+                    break;
+                case 'CT':
+                    if (Math.abs(nodeParams.current / this.params.ratio) > this.params.maxSecondary) {
+                        issues.push(`Выход за диапазон ТТ ${this.name}`);
+                    }
+                    break;
+                case 'ОПН':
+                    if (nodeParams.leakageCurrent > this.params.maxLeakage) {
+                        issues.push(`Ограничитель перенапряжений ${this.name}: ток утечки ${nodeParams.leakageCurrent.toFixed(2)} мА > ${this.params.maxLeakage} мА`);
+                    }
+                    break;
+                case 'UKRM_fast':
+                    if (nodeParams.cosφ < this.params.minCosφ) {
+                        issues.push(`УКРМ (быстродействующая) не справляется, cosφ = ${nodeParams.cosφ.toFixed(2)}`);
+                    }
+                    break;
+                case 'UKRM_step':
+                    if (this.params.switchCount > this.params.maxSwitches) {
+                        issues.push(`УКРМ ступенчатая: превышен ресурс контакторов (${this.params.switchCount} > ${this.params.maxSwitches})`);
+                    }
+                    if (nodeParams.cosφ < this.params.minCosφ) {
+                        issues.push(`Низкий cosφ = ${nodeParams.cosφ.toFixed(2)} при ступенчатой УКРМ`);
+                    }
+                    break;
+                case 'compressor':
+                    if (nodeParams.current > this.params.nominalCurrent * 1.2) {
+                        issues.push(`Компрессор ${this.name} перегружен, возможна остановка пневматики`);
+                    }
+                    break;
+                case 'KTP':
+                    if (nodeParams.temperature > 70) {
+                        issues.push(`КТП ${this.name}: перегрев, температура ${nodeParams.temperature.toFixed(0)}°C`);
+                    }
+                    break;
             }
+            return issues;
+        }
+    }
+
+    // ============================================================
+    // КЛАСС УЗЛА СЕТИ
+    // ============================================================
+    class NetworkNode {
+        constructor(id, name, type, parentId, category, equipmentState) {
+            this.id = id;
+            this.name = name;
+            this.type = type;       // input, transformer, bus, consumer
+            this.parentId = parentId;
+            this.category = category; // 1,2,3
+            this.equipmentState = equipmentState;
+            this.equipments = [];
             
-            // Сбор рисков со всей сети
-            collectRisks() {
-                const risks = [];
-                for (const node of this.nodes) {
-                    const riskData = node.calculateRisk();
-                    risks.push({
-                        nodeId: node.id,
-                        nodeName: node.name,
-                        nodeType: node.type,
-                        category: node.category,
-                        equipmentState: node.equipmentState,
-                        params: { ...node.params },
-                        ...riskData
-                    });
-                }
-                return risks.sort((a, b) => b.risk - a.risk);
+            // Параметры мониторинга
+            this.params = {
+                voltage: 10.5,
+                current: 0,
+                power: 0,
+                temperature: 45,
+                cosφ: 0.92,
+                leakageCurrent: 0.1
+            };
+            
+            this.history = [];
+        }
+        
+        addEquipment(equipment) {
+            this.equipments.push(equipment);
+        }
+        
+        updateParams(baseVoltage, loadFactor, isEmergency) {
+            // Падение напряжения от предков
+            let voltageDrop = this.parentId ? 0.02 + Math.random() * 0.03 : 0;
+            if (isEmergency) voltageDrop += 0.05;
+            this.params.voltage = baseVoltage * (1 - voltageDrop);
+            
+            // Ток и мощность
+            let baseCurrent = 0;
+            if (this.type === 'transformer') baseCurrent = 400 + Math.random() * 200;
+            else if (this.type === 'consumer') baseCurrent = 150 + Math.random() * 150;
+            else if (this.type === 'bus') baseCurrent = 300 + Math.random() * 200;
+            else baseCurrent = 100;
+            
+            this.params.current = baseCurrent * loadFactor;
+            this.params.power = (this.params.current * this.params.voltage) / 1000;
+            
+            // Температура
+            const tempRise = (this.params.current / 600) * 35;
+            const stateTemp = (1 - this.equipmentState) * 15;
+            this.params.temperature = 40 + tempRise + stateTemp + Math.random() * 8;
+            
+            // cos φ и ток утечки
+            this.params.cosφ = Math.min(0.99, Math.max(0.7, 0.85 + (Math.random() - 0.5) * 0.1));
+            if (isEmergency) this.params.cosφ = Math.max(0.65, this.params.cosφ - 0.1);
+            
+            this.params.leakageCurrent = 0.05 + Math.random() * 0.3 + (1 - this.equipmentState) * 0.2;
+            
+            this.history.push({ ...this.params, timestamp: Date.now() });
+            if (this.history.length > 40) this.history.shift();
+        }
+        
+        detectAnomalies() {
+            const anomalies = [];
+            const limits = {
+                voltage: { min: 9.5, max: 10.8 },
+                current: this.type === 'transformer' ? { min: 200, max: 750 } : { min: 50, max: 400 },
+                temperature: { min: 30, max: 85 },
+                cosφ: { min: 0.75, max: 1.0 }
+            };
+            
+            if (this.params.voltage < limits.voltage.min || this.params.voltage > limits.voltage.max)
+                anomalies.push({ param: 'Напряжение', value: this.params.voltage, severity: 'high' });
+            if (this.params.current < limits.current.min || this.params.current > limits.current.max)
+                anomalies.push({ param: 'Ток', value: this.params.current, severity: this.params.current > limits.current.max*1.1 ? 'high' : 'medium' });
+            if (this.params.temperature < limits.temperature.min || this.params.temperature > limits.temperature.max)
+                anomalies.push({ param: 'Температура', value: this.params.temperature, severity: 'high' });
+            if (this.params.cosφ < limits.cosφ.min)
+                anomalies.push({ param: 'cos φ', value: this.params.cosφ, severity: 'medium' });
+            
+            // Z-score статистика
+            if (this.history.length > 10) {
+                const histCurrent = this.history.slice(-20).map(h => h.current);
+                const mean = ss.mean(histCurrent);
+                const std = ss.standardDeviation(histCurrent);
+                const zScore = Math.abs((this.params.current - mean) / std);
+                if (zScore > 2.5)
+                    anomalies.push({ param: 'Ток (стат.отклонение)', value: this.params.current, severity: zScore > 3.5 ? 'high' : 'medium' });
             }
-            
-            // Генерация рекомендаций по всей сети
-            generateRecommendations(anomalies, risks) {
-                const recommendations = [];
-                
-                // 1. Критические аномалии
-                const criticalNodes = anomalies.filter(a => 
-                    a.anomalies.some(an => an.severity === 'high')
-                );
-                for (const node of criticalNodes) {
-                    recommendations.push({
-                        priority: 'КРИТИЧЕСКИЙ',
-                        node: node.node,
-                        text: `АВАРИЙНОЕ ОТКЛОНЕНИЕ на ${node.node}: ${node.anomalies.filter(a => a.severity === 'high').map(a => a.param).join(', ')}`,
-                        action: 'НЕМЕДЛЕННОЕ ОТКЛЮЧЕНИЕ',
-                        timeframe: 'НЕМЕДЛЕННО'
-                    });
-                }
-                
-                // 2. Высокие риски
-                const highRisks = risks.filter(r => r.level === 'high');
-                for (const risk of highRisks) {
-                    recommendations.push({
-                        priority: 'ВЫСОКИЙ',
-                        node: risk.nodeName,
-                        text: `${risk.nodeName}: Снизить нагрузку на 30%. Вероятность отказа ${(risk.probability * 100).toFixed(1)}%`,
-                        action: 'СНИЖЕНИЕ НАГРУЗКИ',
-                        timeframe: '10 минут'
-                    });
-                }
-                
-                // 3. Средние риски
-                const mediumRisks = risks.filter(r => r.level === 'medium' && !highRisks.includes(r));
-                for (const risk of mediumRisks.slice(0, 2)) {
-                    recommendations.push({
-                        priority: 'СРЕДНИЙ',
-                        node: risk.nodeName,
-                        text: `${risk.nodeName}: Подготовить резерв. Состояние оборудования ${Math.round(risk.equipmentState * 100)}%`,
-                        action: 'ПОДГОТОВКА РЕЗЕРВА',
-                        timeframe: '1 час'
-                    });
-                }
-                
-                // 4. Перегрузка сети
-                const totalPower = risks.reduce((sum, r) => sum + r.params.power, 0);
-                if (totalPower > 35) {
-                    recommendations.push({
-                        priority: 'РЕЖИМ',
-                        node: 'Вся сеть',
-                        text: `Общая нагрузка ${totalPower.toFixed(1)} МВт. Рекомендуется отключение 3-категорийных потребителей`,
-                        action: 'УПРАВЛЕНИЕ НАГРУЗКОЙ',
-                        timeframe: '30 минут'
-                    });
-                }
-                
-                if (recommendations.length === 0) {
-                    recommendations.push({
-                        priority: 'ИНФОРМАЦИЯ',
-                        node: 'Система',
-                        text: 'Все параметры в норме. Мониторинг продолжается.',
-                        action: 'НАБЛЮДЕНИЕ',
-                        timeframe: 'постоянно'
-                    });
-                }
-                
-                return recommendations;
+            return anomalies;
+        }
+        
+        diagnoseEquipments() {
+            let allIssues = [];
+            for (let eq of this.equipments) {
+                let issues = eq.checkHealth(this.params);
+                allIssues = allIssues.concat(issues);
             }
+            return allIssues;
+        }
+        
+        calculateFailureProbability() {
+            const stateFactor = 1 - this.equipmentState;
+            const currentRatio = Math.min(1.2, this.params.current / 600);
+            const tempFactor = Math.max(0, (this.params.temperature - 40) / 100);
+            const logit = -3.5 + 4.0 * stateFactor + 5.0 * currentRatio + 3.0 * tempFactor;
+            return Math.min(0.99, Math.max(0.01, 1 / (1 + Math.exp(-logit))));
+        }
+        
+        calculateConsequence() {
+            const baseCost = 5000;
+            const catFactor = {1: 10, 2: 5, 3: 1}[this.category] || 5;
+            const stateFactor = this.equipmentState < 0.7 ? 1.5 : 1.0;
+            return this.params.power * baseCost * catFactor * stateFactor;
+        }
+        
+        calculateRisk() {
+            const prob = this.calculateFailureProbability();
+            const cons = this.calculateConsequence();
+            const risk = prob * cons;
+            let level = 'low';
+            if (risk > 8000) level = 'high';
+            else if (risk > 2000) level = 'medium';
+            return { probability: prob, consequence: cons, risk, level };
+        }
+    }
+
+    // ============================================================
+    // СИСТЕМА (ВСЯ СЕТЬ)
+    // ============================================================
+    class PowerNetwork {
+        constructor() {
+            this.nodes = [];
+            this.history = [];
+            this.cycleCount = 0;
+            this.initNetwork();
+        }
+        
+        initNetwork() {
+            // Узлы сети
+            const input1 = new NetworkNode('input', 'Ввод 110 кВ (основной)', 'input', null, 1, 0.95);
+            const t1 = new NetworkNode('t1', 'Трансформатор Т-1 (ГПП)', 'transformer', 'input', 1, 0.85);
+            const t2 = new NetworkNode('t2', 'Трансформатор Т-2 (ГПП)', 'transformer', 'input', 1, 0.68); // изношен
+            const bus1 = new NetworkNode('bus1', 'Секция шин №1 (10 кВ)', 'bus', 't1', 1, 0.88);
+            const bus2 = new NetworkNode('bus2', 'Секция шин №2 (10 кВ)', 'bus', 't2', 1, 0.88);
             
-            // Основной цикл контроля
-            runControlCycle(isEmergency = false) {
-                this.updateAllNodes(isEmergency);
-                
-                const anomalies = this.collectAnomalies();
-                const risks = this.collectRisks();
-                const recommendations = this.generateRecommendations(anomalies, risks);
-                
-                const cycleData = {
-                    timestamp: new Date(),
-                    cycle: ++this.cycleCount,
-                    anomalies,
-                    risks,
-                    recommendations,
-                    isEmergency
-                };
-                
-                this.history.push(cycleData);
-                if (this.history.length > 50) this.history.shift();
-                
-                return cycleData;
-            }
+            // Потребители
+            const shop1 = new NetworkNode('shop1', 'Цех №1 (Прессовый)', 'consumer', 'bus1', 1, 0.82);
+            const shop2 = new NetworkNode('shop2', 'Цех №2 (Сборочный)', 'consumer', 'bus1', 2, 0.86);
+            const shop3 = new NetworkNode('shop3', 'Цех №3 (Гальваника)', 'consumer', 'bus2', 1, 0.79);
+            const shop4 = new NetworkNode('shop4', 'Цех №4 (Админкорпус)', 'consumer', 'bus2', 3, 0.91);
+            const compressor1 = new NetworkNode('comp1', 'Компрессор №1 (10 кВ)', 'consumer', 'bus1', 2, 0.84);
+            const compressor2 = new NetworkNode('comp2', 'Компрессор №2 (10 кВ)', 'consumer', 'bus2', 2, 0.83);
             
-            getHistory() {
-                return this.history;
+            // Добавляем оборудование в каждый узел
+            // Трансформаторы
+            t1.addEquipment(new Equipment('transformer', 'Т-1 (10 МВА)', { maxTemp: 85, maxCurrent: 700 }));
+            t2.addEquipment(new Equipment('transformer', 'Т-2 (10 МВА)', { maxTemp: 85, maxCurrent: 700 }));
+            // Измерительные трансформаторы
+            bus1.addEquipment(new Equipment('VT', 'ТН-1 (10кВ/100В)', { ratio: 100, fuseStatus: true }));
+            bus1.addEquipment(new Equipment('CT', 'ТТ-1 (600/5)', { ratio: 120, maxSecondary: 5.2 }));
+            bus2.addEquipment(new Equipment('VT', 'ТН-2', { ratio: 100, fuseStatus: true }));
+            bus2.addEquipment(new Equipment('CT', 'ТТ-2', { ratio: 120, maxSecondary: 5.2 }));
+            // ОПН
+            bus1.addEquipment(new Equipment('ОПН', 'ОПН-10 кВ', { maxLeakage: 0.5 }));
+            bus2.addEquipment(new Equipment('ОПН', 'ОПН-10 кВ', { maxLeakage: 0.5 }));
+            // Счетчики
+            shop1.addEquipment(new Equipment('meter', 'Счетчик ЦЭ6803', { activeEnergy: 1250, reactiveEnergy: 340 }));
+            shop2.addEquipment(new Equipment('meter', 'Счетчик Меркурий', { activeEnergy: 980, reactiveEnergy: 210 }));
+            // УКРМ
+            shop1.addEquipment(new Equipment('UKRM_fast', 'УКРМ-0,4 кВ (быстродействующая)', { minCosφ: 0.92 }));
+            shop3.addEquipment(new Equipment('UKRM_step', 'УКРМ-0,4 кВ (ступенчатая)', { minCosφ: 0.91, switchCount: 6800, maxSwitches: 10000 }));
+            // Компрессоры
+            compressor1.addEquipment(new Equipment('compressor', 'Вакуумный компрессор 10 кВ', { nominalCurrent: 280 }));
+            compressor2.addEquipment(new Equipment('compressor', 'Вакуумный компрессор 10 кВ', { nominalCurrent: 280 }));
+            // КТП
+            shop1.addEquipment(new Equipment('KTP', 'КТП-1 (1000 кВА)', {}));
+            shop2.addEquipment(new Equipment('KTP', 'КТП-2 (630 кВА)', {}));
+            shop3.addEquipment(new Equipment('KTP', 'КТП-3 (1250 кВА)', {}));
+            shop4.addEquipment(new Equipment('KTP', 'КТП-4 (400 кВА)', {}));
+            
+            this.nodes = [input1, t1, t2, bus1, bus2, shop1, shop2, shop3, shop4, compressor1, compressor2];
+        }
+        
+        updateAllNodes(isEmergency) {
+            const loadFactor = isEmergency ? 1.45 : (0.6 + Math.random() * 0.7);
+            const baseVoltage = isEmergency ? 9.7 : 10.5;
+            for (let node of this.nodes) {
+                node.updateParams(baseVoltage, loadFactor, isEmergency);
             }
         }
         
-        // ============================================================
-        // UI КОМПОНЕНТЫ
-        // ============================================================
-        
-        let network = new PowerNetwork();
-        let currentCycleData = null;
-        
-        function getStatusClass(value, thresholds) {
-            if (value < thresholds.min || value > thresholds.max) return 'danger';
-            if ((thresholds.warningMin && value < thresholds.warningMin) || 
-                (thresholds.warningMax && value > thresholds.warningMax)) return 'warning';
-            return 'normal';
+        collectAllData() {
+            let anomalies = [];
+            let equipmentIssues = [];
+            let risks = [];
+            
+            for (let node of this.nodes) {
+                let nodeAnoms = node.detectAnomalies();
+                if (nodeAnoms.length) anomalies.push({ node: node.name, nodeId: node.id, anomalies: nodeAnoms });
+                
+                let eqIssues = node.diagnoseEquipments();
+                if (eqIssues.length) equipmentIssues.push({ node: node.name, issues: eqIssues });
+                
+                let risk = node.calculateRisk();
+                risks.push({
+                    nodeId: node.id,
+                    nodeName: node.name,
+                    nodeType: node.type,
+                    category: node.category,
+                    equipmentState: node.equipmentState,
+                    params: { ...node.params },
+                    ...risk
+                });
+            }
+            return { anomalies, equipmentIssues, risks: risks.sort((a,b) => b.risk - a.risk) };
         }
         
-        function renderNetwork(cycleData) {
-            const container = document.getElementById('network-grid');
-            const risks = cycleData.risks;
-            const anomalies = cycleData.anomalies;
-            
-            // Создаем карту аномалий по узлам
-            const anomalyMap = new Map();
-            for (const a of anomalies) {
-                anomalyMap.set(a.nodeId, a.anomalies);
+        generateRecommendations(data) {
+            let recs = [];
+            // Критические аномалии
+            for (let a of data.anomalies) {
+                let critical = a.anomalies.filter(an => an.severity === 'high');
+                if (critical.length) {
+                    recs.push({ priority: 'КРИТИЧЕСКАЯ АВАРИЯ', node: a.node, text: `${a.node}: ${critical.map(c=>c.param).join(', ')} - откл. немедленно!`, timeframe: 'НЕМЕДЛЕННО' });
+                }
             }
+            // Проблемы оборудования
+            for (let eq of data.equipmentIssues) {
+                recs.push({ priority: 'ВЫСОКИЙ', node: eq.node, text: eq.issues[0], timeframe: '1 час' });
+            }
+            // Высокие риски
+            for (let r of data.risks.filter(r => r.level === 'high').slice(0,2)) {
+                recs.push({ priority: 'ВЫСОКИЙ РИСК', node: r.nodeName, text: `${r.nodeName}: снизить нагрузку, риск ${Math.round(r.risk).toLocaleString()} руб`, timeframe: '10 мин' });
+            }
+            // Низкий cosφ
+            for (let r of data.risks.filter(r => r.params.cosφ < 0.8)) {
+                recs.push({ priority: 'КОМПЕНСАЦИЯ', node: r.nodeName, text: `${r.nodeName}: низкий cosφ = ${r.params.cosφ.toFixed(2)}, проверить УКРМ`, timeframe: '2 часа' });
+            }
+            if (!recs.length) recs.push({ priority: 'НОРМА', node: 'Система', text: 'Все параметры в норме', timeframe: 'наблюдение' });
+            return recs;
+        }
+        
+        runControlCycle(isEmergency = false) {
+            this.updateAllNodes(isEmergency);
+            const data = this.collectAllData();
+            const recommendations = this.generateRecommendations(data);
+            const cycleData = { timestamp: new Date(), cycle: ++this.cycleCount, ...data, recommendations, isEmergency };
+            this.history.push(cycleData);
+            if (this.history.length > 40) this.history.shift();
+            return cycleData;
+        }
+        
+        getHistory() { return this.history; }
+    }
+
+    // ============================================================
+    // UI
+    // ============================================================
+    let network = new PowerNetwork();
+    let currentData = null;
+    
+    function renderNetwork(data) {
+        const container = document.getElementById('network-grid');
+        const anomalyMap = new Map();
+        for (let a of data.anomalies) anomalyMap.set(a.nodeId, a.anomalies);
+        
+        const eqIssueMap = new Map();
+        for (let eq of data.equipmentIssues) eqIssueMap.set(eq.node, eq.issues);
+        
+        container.innerHTML = data.risks.map(risk => {
+            const nodeAnoms = anomalyMap.get(risk.nodeId) || [];
+            const hasCritical = nodeAnoms.some(a => a.severity === 'high');
+            const hasWarn = nodeAnoms.some(a => a.severity === 'medium');
+            let alertClass = '';
+            if (hasCritical) alertClass = 'alert';
+            else if (hasWarn || risk.level === 'high') alertClass = 'warning';
             
-            container.innerHTML = risks.map(risk => {
-                const nodeAnomalies = anomalyMap.get(risk.nodeId) || [];
-                const hasCritical = nodeAnomalies.some(a => a.severity === 'high');
-                const hasWarning = nodeAnomalies.some(a => a.severity === 'medium');
-                
-                let alertClass = '';
-                if (hasCritical) alertClass = 'alert';
-                else if (hasWarning || risk.level === 'high') alertClass = 'warning';
-                
-                return `
-                    <div class="node-card ${alertClass}">
-                        <div class="node-header">
-                            <span class="node-name">${risk.nodeName}</span>
-                            <span class="node-badge ${risk.nodeType === 'transformer' ? 'transformer' : (risk.nodeType === 'consumer' ? 'consumer' : 'input')}">
-                                ${risk.nodeType === 'transformer' ? '🔻 Трансформатор' : (risk.nodeType === 'consumer' ? '🏭 Потребитель' : '⚡ Ввод')}
-                                ${risk.category ? ` | ${risk.category} кат.` : ''}
-                            </span>
-                        </div>
-                        <div class="node-params">
-                            <div class="param">
-                                <div class="param-label">Напряжение</div>
-                                <div class="param-value ${risk.params.voltage < 9.5 || risk.params.voltage > 10.8 ? 'danger' : 'normal'}">
-                                    ${risk.params.voltage.toFixed(2)} кВ
-                                </div>
-                            </div>
-                            <div class="param">
-                                <div class="param-label">Ток</div>
-                                <div class="param-value ${risk.params.current > 600 ? 'danger' : (risk.params.current > 450 ? 'warning' : 'normal')}">
-                                    ${risk.params.current.toFixed(0)} А
-                                </div>
-                            </div>
-                            <div class="param">
-                                <div class="param-label">Мощность</div>
-                                <div class="param-value ${risk.params.power > 8 ? 'warning' : 'normal'}">
-                                    ${risk.params.power.toFixed(2)} МВт
-                                </div>
-                            </div>
-                            <div class="param">
-                                <div class="param-label">Температура</div>
-                                <div class="param-value ${risk.params.temperature > 85 ? 'danger' : (risk.params.temperature > 75 ? 'warning' : 'normal')}">
-                                    ${risk.params.temperature.toFixed(1)} °C
-                                </div>
-                            </div>
-                        </div>
-                        <div class="node-risk risk-${risk.level}">
-                            ${nodeAnomalies.length > 0 ? `⚠️ Аномалии: ${nodeAnomalies.map(a => a.param).join(', ')}<br>` : ''}
-                            📊 Риск: ${Math.round(risk.risk).toLocaleString()} руб | 
-                            Вероятность: ${(risk.probability * 100).toFixed(1)}% | 
-                            Состояние: ${Math.round(risk.equipmentState * 100)}%
-                        </div>
+            const eqIssues = eqIssueMap.get(risk.nodeName) || [];
+            
+            return `
+                <div class="node-card ${alertClass}">
+                    <div class="node-header">
+                        <span class="node-name">${risk.nodeName}</span>
+                        <span class="node-badge ${risk.nodeType === 'transformer' ? 'transformer' : (risk.nodeType === 'consumer' ? 'consumer'+risk.category : 'bus')}">
+                            ${risk.nodeType === 'transformer' ? '🔻 Трансформатор' : risk.nodeType === 'bus' ? '🔹 Шины 10кВ' : '🏭 Потребитель '+risk.category+' кат'}
+                        </span>
                     </div>
-                `;
-            }).join('');
-        }
-        
-        function updateRecommendations(cycleData) {
-            const container = document.getElementById('recommendations');
-            container.innerHTML = cycleData.recommendations.map(rec => `
-                <div class="recommendation-item ${rec.priority === 'КРИТИЧЕСКИЙ' ? 'recommendation-critical' : ''}">
-                    <strong>[${rec.priority}] ${rec.node}</strong><br>
-                    ${rec.text}<br>
-                    <small>🎯 Действие: ${rec.action} | ⏱️ ${rec.timeframe}</small>
+                    <div class="node-params">
+                        <div class="param"><div class="param-label">U</div><div class="param-value ${risk.params.voltage<9.5||risk.params.voltage>10.8?'danger':'normal'}">${risk.params.voltage.toFixed(2)} кВ</div></div>
+                        <div class="param"><div class="param-label">I</div><div class="param-value ${risk.params.current>700?'danger':(risk.params.current>550?'warning':'normal')}">${risk.params.current.toFixed(0)} А</div></div>
+                        <div class="param"><div class="param-label">P</div><div class="param-value">${risk.params.power.toFixed(2)} МВт</div></div>
+                        <div class="param"><div class="param-label">T</div><div class="param-value ${risk.params.temperature>85?'danger':(risk.params.temperature>75?'warning':'normal')}">${risk.params.temperature.toFixed(0)}°C</div></div>
+                        <div class="param"><div class="param-label">cosφ</div><div class="param-value ${risk.params.cosφ<0.75?'danger':(risk.params.cosφ<0.85?'warning':'normal')}">${risk.params.cosφ.toFixed(2)}</div></div>
+                        <div class="param"><div class="param-label">Iут(ОПН)</div><div class="param-value ${risk.params.leakageCurrent>0.5?'danger':'normal'}">${risk.params.leakageCurrent.toFixed(2)} мА</div></div>
+                    </div>
+                    <div class="equipment-list">
+                        ${eqIssues.length ? eqIssues.map(iss => `<span class="equipment-item bad">⚠️ ${iss.substring(0,45)}</span>`).join('') : '<span class="equipment-item">✅ Оборудование в норме</span>'}
+                    </div>
+                    <div class="node-risk risk-${risk.level}">
+                        ${nodeAnoms.length ? `⚠️ Аномалии: ${nodeAnoms.map(a=>a.param).join(', ')}<br>` : ''}
+                        📊 Риск: ${Math.round(risk.risk).toLocaleString()} ₽ | Вероятность отказа: ${(risk.probability*100).toFixed(1)}% | Состояние: ${Math.round(risk.equipmentState*100)}%
+                    </div>
                 </div>
-            `).join('');
-        }
-        
-        function updateHistory() {
-            const log = document.getElementById('history-log');
-            const history = network.getHistory();
-            const recentHistory = history.slice(-15).reverse();
-            
-            log.innerHTML = recentHistory.map(entry => {
-                const criticalCount = entry.anomalies.filter(a => 
-                    a.anomalies.some(an => an.severity === 'high')
-                ).length;
-                const totalAnomalies = entry.anomalies.reduce((sum, a) => sum + a.anomalies.length, 0);
-                
-                return `
-                    <div style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px;">
-                        <span>${entry.timestamp.toLocaleTimeString().slice(0,5)}</span>
-                        <span>Цикл #${entry.cycle}</span>
-                        <span>${entry.isEmergency ? '🔥 АВАРИЙНЫЙ' : '✅ НОРМА'}</span>
-                        <span>⚠️ Аномалий: ${totalAnomalies}</span>
-                        <span>🔴 Критических: ${criticalCount}</span>
-                    </div>
-                `;
-            }).join('');
-        }
-        
-        function updateUI(cycleData) {
-            renderNetwork(cycleData);
-            updateRecommendations(cycleData);
-            updateHistory();
-        }
-        
-        function simulateCycle() {
-            currentCycleData = network.runControlCycle(false);
-            updateUI(currentCycleData);
-        }
-        
-        function simulateEmergency() {
-            currentCycleData = network.runControlCycle(true);
-            updateUI(currentCycleData);
-        }
-        
-        function resetSystem() {
-            network = new PowerNetwork();
-            currentCycleData = network.runControlCycle(false);
-            updateUI(currentCycleData);
-        }
-        
-        // Запуск
-        simulateCycle();
-        setInterval(() => simulateCycle(), 15000);
-    </script>
+            `;
+        }).join('');
+    }
+    
+    function updateRecommendations(data) {
+        const container = document.getElementById('recommendations');
+        container.innerHTML = data.recommendations.map(rec => `
+            <div class="recommendation-item ${rec.priority.includes('КРИТИЧЕСКАЯ') ? 'recommendation-critical' : ''}">
+                <strong>[${rec.priority}] ${rec.node}</strong><br>${rec.text}<br><small>⏱️ ${rec.timeframe}</small>
+            </div>
+        `).join('');
+    }
+    
+    function updateHistory() {
+        const logDiv = document.getElementById('history-log');
+        const history = network.getHistory().slice(-15).reverse();
+        logDiv.innerHTML = history.map(entry => `
+            <div style="padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; flex-wrap: wrap;">
+                <span>${entry.timestamp.toLocaleTimeString().slice(0,5)}</span>
+                <span>Цикл #${entry.cycle}</span>
+                <span>${entry.isEmergency ? '🔥 АВАРИЯ' : '✅ НОРМА'}</span>
+                <span>⚠️ ${entry.anomalies.reduce((s,a)=>s+a.anomalies.length,0)} аном.</span>
+                <span>🔧 ${entry.equipmentIssues.length} деф.обор.</span>
+            </div>
+        `).join('');
+    }
+    
+    function updateUI(data) {
+        renderNetwork(data);
+        updateRecommendations(data);
+        updateHistory();
+    }
+    
+    function simulateCycle() { currentData = network.runControlCycle(false); updateUI(currentData); }
+    function simulateEmergency() { currentData = network.runControlCycle(true); updateUI(currentData); }
+    function resetSystem() { network = new PowerNetwork(); currentData = network.runControlCycle(false); updateUI(currentData); }
+    
+    simulateCycle();
+    setInterval(() => simulateCycle(), 12000);
+</script>
 </body>
 </html>
