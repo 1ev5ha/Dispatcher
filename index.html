@@ -30,7 +30,7 @@
         .plant-specs { display: flex; justify-content: center; gap: 20px; margin-top: 10px; flex-wrap: wrap; }
         .spec { background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; }
         
-        /* Статистика */
+        /* Верхняя статистика */
         .plant-stats {
             display: flex;
             flex-wrap: wrap;
@@ -48,7 +48,7 @@
         .stat-value { font-size: 1.6rem; font-weight: bold; color: #00b4d8; }
         .stat-label { font-size: 0.65rem; color: #aaa; }
         
-        /* Схема */
+        /* Схема сети */
         .scheme-panel {
             background: rgba(0,0,0,0.4);
             border-radius: 16px;
@@ -59,30 +59,73 @@
         .scheme-title { color: #00b4d8; margin-bottom: 10px; font-size: 0.9rem; }
         .scheme-tree { font-family: 'Courier New', monospace; font-size: 0.7rem; color: #aaa; line-height: 1.6; white-space: pre; }
         .scheme-tree .highlight { color: #00b4d8; }
-        .scheme-tree .danger { color: #ff6b6b; }
         
-        /* Секции */
-        .section {
+        /* Секция компрессоров */
+        .compressors-section {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 16px;
             margin-bottom: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .section-title {
-            font-size: 1.1rem;
-            color: #00b4d8;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+        .section-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-        .compressors-grid, .shops-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .section-icon { font-size: 1.5rem; }
+        .section-title { font-size: 1.2rem; font-weight: bold; color: #00b4d8; }
+        .section-badge { font-size: 0.7rem; background: rgba(0,0,0,0.5); padding: 4px 12px; border-radius: 20px; }
+        
+        /* Сетка для компрессоров */
+        .compressors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        /* Сетка для цехов */
+        .shops-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
             margin-bottom: 20px;
         }
         
-        /* Карточки */
+        /* Карточка цеха (группа) */
+        .shop-group {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .shop-group-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            flex-wrap: wrap;
+        }
+        .shop-group-name { font-size: 1.1rem; font-weight: bold; color: #ffd43b; }
+        .shop-cat-badge { font-size: 0.65rem; padding: 3px 10px; border-radius: 20px; }
+        .cat1 { background: #e74c3c; }
+        .cat2 { background: #f39c12; }
+        .cat3 { background: #27ae60; }
+        .shop-stats { font-size: 0.7rem; color: #aaa; margin-left: auto; }
+        
+        /* Сетка КТП внутри цеха */
+        .ktp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        
+        /* Карточки оборудования */
         .compressor-card, .ktp-card {
             background: rgba(0, 0, 0, 0.55);
             border-radius: 14px;
@@ -104,11 +147,9 @@
         }
         .card-name { font-weight: bold; font-size: 1rem; color: #00b4d8; }
         .card-badge { font-size: 0.6rem; padding: 3px 10px; border-radius: 20px; background: rgba(0,0,0,0.6); }
-        .badge-critical { background: #e74c3c; }
-        .badge-cat1 { background: #e74c3c; }
-        .badge-cat2 { background: #f39c12; }
-        .badge-cat3 { background: #27ae60; }
         .badge-compressor { background: #8e44ad; }
+        .badge-ktp { background: #2c3e66; }
+        .badge-ipt { background: #c0392b; }
         
         .card-params {
             display: grid;
@@ -118,7 +159,7 @@
         }
         .param { text-align: center; padding: 5px; background: rgba(0,0,0,0.3); border-radius: 8px; }
         .param-label { font-size: 0.55rem; color: #aaa; }
-        .param-value { font-size: 0.9rem; font-weight: bold; }
+        .param-value { font-size: 0.85rem; font-weight: bold; }
         .param-value.normal { color: #51cf66; }
         .param-value.warning { color: #ffd43b; }
         .param-value.danger { color: #ff6b6b; }
@@ -134,11 +175,13 @@
         .risk-medium { background: rgba(255,212,59,0.2); color: #ffd43b; }
         .risk-high { background: rgba(255,68,68,0.2); color: #ff6b6b; }
         
+        /* Панель рекомендаций */
         .panel { background: rgba(0,0,0,0.5); border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
         .panel h3 { margin-bottom: 12px; color: #00b4d8; font-size: 1rem; }
         .recommendation-item { background: rgba(0,180,216,0.1); margin: 8px 0; padding: 10px; border-radius: 10px; border-left: 3px solid #00b4d8; font-size: 0.8rem; }
         .recommendation-critical { border-left-color: #ff4444; background: rgba(255,68,68,0.1); }
         
+        /* Кнопки */
         .controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 16px; }
         button { background: #00b4d8; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; flex: 1; min-width: 100px; transition: 0.2s; }
         button:active { transform: scale(0.97); }
@@ -148,7 +191,7 @@
         .history-log { height: 120px; overflow-y: auto; font-size: 0.7rem; font-family: monospace; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 12px; }
         
         @media (max-width: 700px) {
-            .compressors-grid, .shops-grid { grid-template-columns: 1fr; }
+            .ktp-grid { grid-template-columns: 1fr; }
             .card-params { grid-template-columns: repeat(2,1fr); }
         }
     </style>
@@ -178,45 +221,33 @@
         <div class="stat-card"><div class="stat-value" id="compressorStatus">5/5</div><div class="stat-label">Компрессоры в работе</div></div>
     </div>
     
-    <!-- Схема сети -->
+    <!-- Схема сети (компактная) -->
     <div class="scheme-panel">
         <div class="scheme-title">🗺️ Структурная схема электроснабжения</div>
         <div class="scheme-tree">
-            <span class="highlight">⚡ Ввод 110 кВ (проект 40 МВт, факт ~20 МВт)</span>
-│
-├── <span class="highlight">🔻 Здание комплексного энергоблока (13КТП1, 13КТП2, 13КТП3)</span>
-│   │
-│   ├── <span class="highlight">🖨️ Компрессор К1 (800 кВт)</span>
-│   ├── <span class="highlight">🖨️ Компрессор К2 (800 кВт)</span>
-│   ├── <span class="highlight">🖨️ Компрессор К3 (800 кВт)</span>
-│   ├── <span class="highlight">🖨️ Компрессор К4 (800 кВт)</span>
-│   └── <span class="highlight">🖨️ Компрессор К5 (800 кВт)</span>
-│       <span style="color:#888;">↓ Сжатый воздух на ВСЕ цеха (централизованная система)</span>
-│
-├── 🏭 <span class="highlight">Цех штамповки</span> (1КТП1, 1КТП2) — 1 категория
-├── 🏭 <span class="highlight">Цех сварки</span> (2КТП1-7) — 1 категория
-├── 🏭 <span class="highlight">Цех покраски (металла)</span> (3КТП1-6 + 3ИПТ1-3) — 1 категория
-├── 🏭 <span class="highlight">Цех итоговой сборки</span> (4КТП1-6) — 1 категория
-├── 🏭 <span class="highlight">Цех покраски пластика</span> (5КТП1-2) — 2 категория
-└── 🏭 <span class="highlight">Центральный склад</span> (6КТП1) — 3 категория
+            ⚡ Ввод 110 кВ (проект 40 МВт) → 🔻 ГПП → 🖨️ Компрессоры К1-К5 (централизованные)
+     │
+     ├── 🏭 Цех штамповки (1 кат) — 1КТП1, 1КТП2
+     ├── 🏭 Цех сварки (1 кат) — 2КТП1-7
+     ├── 🏭 Цех покраски металла (1 кат) — 3КТП1-6, 3ИПТ1-3
+     ├── 🏭 Цех итоговой сборки (1 кат) — 4КТП1-6
+     ├── 🏭 Цех покраски пластика (2 кат) — 5КТП1-2
+     └── 🏭 Центральный склад (3 кат) — 6КТП1
         </div>
     </div>
     
-    <!-- Компрессорная станция -->
-    <div class="section">
-        <div class="section-title">
-            <span>🖨️ Центральная компрессорная станция (питает ВСЕ цеха)</span>
+    <!-- КОМПРЕССОРНАЯ СТАНЦИЯ (отдельная секция) -->
+    <div class="compressors-section">
+        <div class="section-header">
+            <span class="section-icon">🖨️</span>
+            <span class="section-title">Центральная компрессорная станция</span>
+            <span class="section-badge">Питает все цеха сжатым воздухом</span>
         </div>
         <div class="compressors-grid" id="compressors-grid"></div>
     </div>
     
-    <!-- Цеха -->
-    <div class="section">
-        <div class="section-title">
-            <span>🏭 Потребители (КТП и ИПТ)</span>
-        </div>
-        <div class="shops-grid" id="shops-grid"></div>
-    </div>
+    <!-- ЦЕХА (каждый в своей группе) -->
+    <div class="shops-container" id="shops-container"></div>
     
     <!-- Рекомендации -->
     <div class="panel">
@@ -239,7 +270,7 @@
 
 <script>
     // ============================================================
-    // КЛАСС ОБОРУДОВАНИЯ
+    // КЛАССЫ ОБОРУДОВАНИЯ (как в предыдущей версии)
     // ============================================================
     class Equipment {
         constructor(type, name, params) {
@@ -253,89 +284,63 @@
             if (Math.abs(frequency - 50) > 0.5) {
                 issues.push(`Отклонение частоты: ${frequency.toFixed(2)} Гц`);
             }
-            
             switch(this.type) {
                 case 'compressor':
                     if (currentParams.temperature > this.params.maxTemp)
-                        issues.push(`🔥 Перегрев компрессора: ${currentParams.temperature.toFixed(0)}°C > ${this.params.maxTemp}°C`);
+                        issues.push(`🔥 Перегрев: ${currentParams.temperature.toFixed(0)}°C > ${this.params.maxTemp}°C`);
                     if (currentParams.current > this.params.nominalCurrent * 1.15)
-                        issues.push(`⚠️ Перегруз компрессора: ${currentParams.current.toFixed(0)}А > ${(this.params.nominalCurrent*1.15).toFixed(0)}А`);
+                        issues.push(`⚠️ Перегруз: ${currentParams.current.toFixed(0)}А`);
                     if (currentParams.pressure < this.params.minPressure)
-                        issues.push(`⬇️ Низкое давление воздуха: ${currentParams.pressure.toFixed(1)} бар < ${this.params.minPressure} бар`);
+                        issues.push(`⬇️ Низкое давление: ${currentParams.pressure.toFixed(1)} бар`);
                     break;
                 case 'ktp':
                     if (currentParams.temperature > 85)
-                        issues.push(`🔥 Перегрев КТП: ${currentParams.temperature.toFixed(0)}°C > 85°C`);
+                        issues.push(`🔥 Перегрев КТП: ${currentParams.temperature.toFixed(0)}°C`);
                     if (currentParams.current > this.params.nominalCurrent * 1.1)
                         issues.push(`⚠️ Перегруз КТП: ${currentParams.current.toFixed(0)}А`);
                     break;
                 case 'ipt':
                     if (currentParams.temperature > 80)
-                        issues.push(`🔥 Перегрев ИПТ: ${currentParams.temperature.toFixed(0)}°C > 80°C`);
-                    if (currentParams.voltage < 9.5 || currentParams.voltage > 10.8)
-                        issues.push(`⚡ Отклонение напряжения на ИПТ: ${currentParams.voltage.toFixed(2)} кВ`);
+                        issues.push(`🔥 Перегрев ИПТ: ${currentParams.temperature.toFixed(0)}°C`);
                     break;
             }
             return issues;
         }
     }
     
-    // ============================================================
-    // КЛАСС КОМПРЕССОРА
-    // ============================================================
+    // КОМПРЕССОР
     class Compressor {
         constructor(id, name, nominalPower, nominalCurrent) {
             this.id = id;
             this.name = name;
-            this.nominalPower = nominalPower;  // кВт
-            this.nominalCurrent = nominalCurrent;  // А
+            this.nominalPower = nominalPower;
+            this.nominalCurrent = nominalCurrent;
             this.isOperational = true;
             this.equipments = [];
-            
-            this.params = {
-                current: 0,
-                power: 0,
-                temperature: 45,
-                pressure: 7.0,  // бар
-                vibration: 1.5  // мм/с
-            };
+            this.params = { current: 0, power: 0, temperature: 45, pressure: 7.0, vibration: 1.5 };
             this.history = [];
         }
-        
         addEquipment(eq) { this.equipments.push(eq); }
-        
         updateParams(globalLoadFactor, isEmergency) {
-            let loadRatio = globalLoadFactor * 0.8 + (Math.random() - 0.5) * 0.2;
-            loadRatio = Math.min(1.0, Math.max(0.3, loadRatio));
-            
+            let loadRatio = Math.min(1.0, Math.max(0.3, globalLoadFactor * 0.8 + (Math.random() - 0.5) * 0.2));
             this.params.current = this.nominalCurrent * loadRatio;
             this.params.power = this.nominalPower * loadRatio;
-            
-            // Температура компрессора
-            let tempRise = loadRatio * 35;
-            this.params.temperature = 45 + tempRise + Math.random() * 8;
-            
-            // Давление воздуха (при перегрузке падает)
+            this.params.temperature = 45 + loadRatio * 35 + Math.random() * 8;
             this.params.pressure = 7.5 - loadRatio * 1.5 + (Math.random() - 0.5) * 0.3;
             if (isEmergency) this.params.pressure -= 1.0;
             this.params.pressure = Math.max(4.0, this.params.pressure);
-            
-            // Вибрация
             this.params.vibration = 1.0 + loadRatio * 2.0 + (Math.random() - 0.5) * 0.5;
-            
-            this.history.push({ ...this.params, timestamp: Date.now() });
+            this.history.push({ ...this.params });
             if (this.history.length > 40) this.history.shift();
         }
-        
         detectAnomalies() {
             const anomalies = [];
             if (this.params.temperature > 90) anomalies.push({ param: 'Температура', value: this.params.temperature, severity: 'high' });
-            if (this.params.pressure < 5.5) anomalies.push({ param: 'Давление воздуха', value: this.params.pressure, severity: 'high' });
+            if (this.params.pressure < 5.5) anomalies.push({ param: 'Давление', value: this.params.pressure, severity: 'high' });
             if (this.params.current > this.nominalCurrent * 0.95) anomalies.push({ param: 'Высокая нагрузка', value: this.params.current, severity: 'medium' });
-            if (this.params.vibration > 3.5) anomalies.push({ param: 'Повышенная вибрация', value: this.params.vibration, severity: 'medium' });
+            if (this.params.vibration > 3.5) anomalies.push({ param: 'Вибрация', value: this.params.vibration, severity: 'medium' });
             return anomalies;
         }
-        
         calculateFailureProbability() {
             let loadRatio = this.params.current / this.nominalCurrent;
             let tempFactor = Math.max(0, (this.params.temperature - 50) / 50);
@@ -343,90 +348,58 @@
             let logit = -4.5 + 4.0 * loadRatio + 3.5 * tempFactor + 2.5 * vibFactor;
             return Math.min(0.99, Math.max(0.01, 1 / (1 + Math.exp(-logit))));
         }
-        
         calculateRisk(totalFactoryLoss) {
             let prob = this.calculateFailureProbability();
-            let risk = prob * totalFactoryLoss * 0.3;  // 0.3 — доля влияния компрессора
+            let risk = prob * totalFactoryLoss * 0.3;
             let level = risk > 80000 ? 'high' : (risk > 25000 ? 'medium' : 'low');
-            return { probability: prob, risk, level };
+            return { probability: prob, risk, level, params: { ...this.params } };
         }
-        
         diagnoseEquipments(frequency) {
             let issues = [];
-            for (let eq of this.equipments) {
-                issues.push(...eq.checkHealth(this.params, frequency));
-            }
+            for (let eq of this.equipments) issues.push(...eq.checkHealth(this.params, frequency));
             return issues;
         }
     }
     
-    // ============================================================
-    // КЛАСС КТП/ИПТ (ЦЕХ)
-    // ============================================================
+    // КТП/ИПТ
     class PowerNode {
         constructor(id, name, type, category, maxPower, equipmentState, parentShop) {
             this.id = id;
             this.name = name;
-            this.type = type;  // 'ktp' или 'ipt'
-            this.category = category;  // 1,2,3
-            this.maxPower = maxPower;  // МВт
+            this.type = type;
+            this.category = category;
+            this.maxPower = maxPower;
             this.equipmentState = equipmentState;
             this.parentShop = parentShop;
             this.equipments = [];
-            
-            this.params = {
-                voltage: 10.5,
-                current: 0,
-                power: 0,
-                temperature: 45,
-                cosφ: 0.92,
-                frequency: 50.0
-            };
+            this.params = { voltage: 10.5, current: 0, power: 0, temperature: 45, cosφ: 0.92, frequency: 50.0 };
             this.history = [];
         }
-        
         addEquipment(eq) { this.equipments.push(eq); }
-        
         updateParams(baseVoltage, baseFrequency, globalLoadFactor, shopLoadFactor, isEmergency) {
             this.params.frequency = baseFrequency + (Math.random() - 0.5) * (isEmergency ? 0.6 : 0.15);
-            
-            let voltageDrop = globalLoadFactor * 0.04 + shopLoadFactor * 0.02;
-            if (isEmergency) voltageDrop += 0.05;
+            let voltageDrop = globalLoadFactor * 0.04 + shopLoadFactor * 0.02 + (isEmergency ? 0.05 : 0);
             this.params.voltage = baseVoltage * (1 - voltageDrop);
-            
             let targetPower = this.maxPower * shopLoadFactor;
             if (isEmergency) targetPower *= 1.15;
             this.params.power = Math.min(this.maxPower * 1.1, targetPower + (Math.random() - 0.5) * this.maxPower * 0.08);
-            
             this.params.cosφ = 0.92 - shopLoadFactor * 0.1 + (Math.random() - 0.5) * 0.05;
             this.params.cosφ = Math.min(0.98, Math.max(0.72, this.params.cosφ));
-            
             this.params.current = (this.params.power * 1000) / (this.params.voltage * 1.73 * this.params.cosφ);
-            
             let loadRatio = this.params.power / this.maxPower;
-            let tempRise = loadRatio * 40;
             let stateTemp = (1 - this.equipmentState) * 15;
-            this.params.temperature = 35 + tempRise + stateTemp + Math.random() * 8;
-            
-            this.history.push({ ...this.params, timestamp: Date.now() });
-            if (this.history.length > 40) this.history.shift();
+            this.params.temperature = 35 + loadRatio * 40 + stateTemp + Math.random() * 8;
+            this.history.push({ ...this.params });
         }
-        
         detectAnomalies() {
             const anomalies = [];
-            if (this.params.voltage < 9.5 || this.params.voltage > 10.8)
-                anomalies.push({ param: 'Напряжение', value: this.params.voltage, severity: 'high' });
-            if (Math.abs(this.params.frequency - 50) > 0.5)
-                anomalies.push({ param: 'Частота', value: this.params.frequency, severity: 'high' });
-            if (this.params.temperature > 85)
-                anomalies.push({ param: 'Температура', value: this.params.temperature, severity: 'high' });
-            if (this.params.power > this.maxPower * 0.9)
-                anomalies.push({ param: 'Перегруз', value: this.params.power, severity: 'medium' });
-            if (this.params.cosφ < 0.8)
-                anomalies.push({ param: 'Низкий cosφ', value: this.params.cosφ, severity: 'medium' });
+            if (this.params.voltage < 9.5 || this.params.voltage > 10.8) anomalies.push({ param: 'Напряжение', value: this.params.voltage, severity: 'high' });
+            if (Math.abs(this.params.frequency - 50) > 0.5) anomalies.push({ param: 'Частота', value: this.params.frequency, severity: 'high' });
+            if (this.params.temperature > 85) anomalies.push({ param: 'Температура', value: this.params.temperature, severity: 'high' });
+            if (this.params.power > this.maxPower * 0.9) anomalies.push({ param: 'Перегруз', value: this.params.power, severity: 'medium' });
+            if (this.params.cosφ < 0.8) anomalies.push({ param: 'Низкий cosφ', value: this.params.cosφ, severity: 'medium' });
             return anomalies;
         }
-        
         calculateFailureProbability() {
             let loadRatio = this.params.power / this.maxPower;
             let stateFactor = 1 - this.equipmentState;
@@ -434,121 +407,79 @@
             let logit = -4.0 + 4.5 * stateFactor + 5.5 * loadRatio + 3.0 * tempFactor;
             return Math.min(0.99, Math.max(0.01, 1 / (1 + Math.exp(-logit))));
         }
-        
         calculateConsequence() {
             let baseCost = this.type === 'ipt' ? 15000 : 10000;
             let catFactor = {1: 10, 2: 5, 3: 2}[this.category] || 5;
-            let powerLoss = this.params.power;
             let iptBonus = this.type === 'ipt' ? 1.5 : 1.0;
-            return powerLoss * baseCost * catFactor * iptBonus;
+            return this.params.power * baseCost * catFactor * iptBonus;
         }
-        
         calculateRisk() {
             let prob = this.calculateFailureProbability();
             let cons = this.calculateConsequence();
             let risk = prob * cons;
             let level = risk > 12000 ? 'high' : (risk > 4000 ? 'medium' : 'low');
-            return { probability: prob, consequence: cons, risk, level };
+            return { probability: prob, risk, level, params: { ...this.params }, maxPower: this.maxPower };
         }
-        
         diagnoseEquipments() {
             let issues = [];
-            for (let eq of this.equipments) {
-                issues.push(...eq.checkHealth(this.params, this.params.frequency));
-            }
+            for (let eq of this.equipments) issues.push(...eq.checkHealth(this.params, this.params.frequency));
             return issues;
         }
     }
     
-    // ============================================================
     // ЗАВОД
-    // ============================================================
     class Factory {
         constructor() {
             this.compressors = [];
-            this.nodes = [];
+            this.shopGroups = {}; // { shopName: { category, nodes, totalPower } }
             this.history = [];
             this.cycleCount = 0;
             this.initFactory();
         }
         
         initFactory() {
-            // ========== КОМПРЕССОРЫ ==========
-            const comp1 = new Compressor('k1', 'Компрессор К1', 800, 1150);
-            const comp2 = new Compressor('k2', 'Компрессор К2', 800, 1150);
-            const comp3 = new Compressor('k3', 'Компрессор К3', 800, 1150);
-            const comp4 = new Compressor('k4', 'Компрессор К4', 800, 1150);
-            const comp5 = new Compressor('k5', 'Компрессор К5', 800, 1150);
+            // Компрессоры
+            for (let i = 1; i <= 5; i++) {
+                let comp = new Compressor(`k${i}`, `Компрессор К${i}`, 800, 1150);
+                comp.addEquipment(new Equipment('compressor', 'Ротор', { maxTemp: 90, nominalCurrent: 1150, minPressure: 5.5 }));
+                this.compressors.push(comp);
+            }
             
-            [comp1, comp2, comp3, comp4, comp5].forEach(c => {
-                c.addEquipment(new Equipment('compressor', 'Роторная группа', { maxTemp: 90, nominalCurrent: c.nominalCurrent, minPressure: 5.5 }));
-            });
-            this.compressors = [comp1, comp2, comp3, comp4, comp5];
-            
-            // ========== КТП ЦЕХОВ ==========
-            const shopPower = {
-                stamping: { nodes: ['1КТП1', '1КТП2'], maxPower: 3.0, category: 1, state: 0.85 },
-                welding: { nodes: ['2КТП1', '2КТП2', '2КТП3', '2КТП4', '2КТП5', '2КТП6', '2КТП7'], maxPower: 1.2, category: 1, state: 0.82 },
-                painting: { nodes: ['3КТП1', '3КТП2', '3КТП3', '3КТП4', '3КТП5', '3КТП6'], maxPower: 1.0, category: 1, state: 0.80 },
-                ipt: { nodes: ['3ИПТ1 (700кВА)', '3ИПТ2 (700кВА)', '3ИПТ3 (1400кВА)'], maxPower: [0.7, 0.7, 1.4], category: 1, state: 0.88 },
-                assembly: { nodes: ['4КТП1', '4КТП2', '4КТП3', '4КТП4', '4КТП5', '4КТП6'], maxPower: 1.0, category: 1, state: 0.86 },
-                plastic: { nodes: ['5КТП1', '5КТП2'], maxPower: 1.2, category: 2, state: 0.89 },
-                warehouse: { nodes: ['6КТП1'], maxPower: 1.0, category: 3, state: 0.92 }
+            // Структура цехов
+            const shopStructure = {
+                'stamping': { name: '🏭 Цех штамповки', category: 1, nodes: ['1КТП1', '1КТП2'], maxPower: 3.0, state: 0.85, type: 'ktp' },
+                'welding': { name: '🏭 Цех сварки', category: 1, nodes: ['2КТП1','2КТП2','2КТП3','2КТП4','2КТП5','2КТП6','2КТП7'], maxPower: 1.2, state: 0.82, type: 'ktp' },
+                'painting_metal': { name: '🏭 Цех покраски металла', category: 1, nodes: ['3КТП1','3КТП2','3КТП3','3КТП4','3КТП5','3КТП6'], maxPower: 1.0, state: 0.80, type: 'ktp' },
+                'ipt': { name: '🎯 ИПТ (цех покраски)', category: 1, nodes: ['3ИПТ1 (700кВА)','3ИПТ2 (700кВА)','3ИПТ3 (1400кВА)'], maxPower: [0.7, 0.7, 1.4], state: 0.88, type: 'ipt' },
+                'assembly': { name: '🏭 Цех итоговой сборки', category: 1, nodes: ['4КТП1','4КТП2','4КТП3','4КТП4','4КТП5','4КТП6'], maxPower: 1.0, state: 0.86, type: 'ktp' },
+                'plastic': { name: '🏭 Цех покраски пластика', category: 2, nodes: ['5КТП1','5КТП2'], maxPower: 1.2, state: 0.89, type: 'ktp' },
+                'warehouse': { name: '🏭 Центральный склад', category: 3, nodes: ['6КТП1'], maxPower: 1.0, state: 0.92, type: 'ktp' }
             };
             
-            // Цех штамповки
-            shopPower.stamping.nodes.forEach((n, i) => {
-                let node = new PowerNode(n, n, 'ktp', 1, shopPower.stamping.maxPower, shopPower.stamping.state, 'stamping');
-                node.addEquipment(new Equipment('ktp', 'Трансформатор', { nominalCurrent: 250 }));
-                this.nodes.push(node);
-            });
-            
-            // Цех сварки
-            shopPower.welding.nodes.forEach((n, i) => {
-                let node = new PowerNode(n, n, 'ktp', 1, shopPower.welding.maxPower, shopPower.welding.state, 'welding');
-                node.addEquipment(new Equipment('ktp', 'Трансформатор', { nominalCurrent: 120 }));
-                this.nodes.push(node);
-            });
-            
-            // Цех покраски металла (КТП)
-            shopPower.painting.nodes.forEach((n, i) => {
-                let node = new PowerNode(n, n, 'ktp', 1, shopPower.painting.maxPower, shopPower.painting.state, 'painting');
-                node.addEquipment(new Equipment('ktp', 'Трансформатор', { nominalCurrent: 100 }));
-                this.nodes.push(node);
-            });
-            
-            // ИПТ цеха покраски
-            shopPower.ipt.nodes.forEach((n, i) => {
-                let node = new PowerNode(n, n, 'ipt', 1, shopPower.ipt.maxPower[i], shopPower.ipt.state, 'painting');
-                node.addEquipment(new Equipment('ipt', 'Инверторный источник', { nominalCurrent: 200 }));
-                this.nodes.push(node);
-            });
-            
-            // Цех итоговой сборки
-            shopPower.assembly.nodes.forEach((n, i) => {
-                let node = new PowerNode(n, n, 'ktp', 1, shopPower.assembly.maxPower, shopPower.assembly.state, 'assembly');
-                node.addEquipment(new Equipment('ktp', 'Трансформатор', { nominalCurrent: 100 }));
-                this.nodes.push(node);
-            });
-            
-            // Цех покраски пластика
-            shopPower.plastic.nodes.forEach((n, i) => {
-                let node = new PowerNode(n, n, 'ktp', 2, shopPower.plastic.maxPower, shopPower.plastic.state, 'plastic');
-                node.addEquipment(new Equipment('ktp', 'Трансформатор', { nominalCurrent: 100 }));
-                this.nodes.push(node);
-            });
-            
-            // Центральный склад
-            let warehouse = new PowerNode('6КТП1', '6КТП1', 'ktp', 3, 1.0, 0.92, 'warehouse');
-            warehouse.addEquipment(new Equipment('ktp', 'Трансформатор', { nominalCurrent: 80 }));
-            this.nodes.push(warehouse);
+            for (let [key, data] of Object.entries(shopStructure)) {
+                this.shopGroups[key] = { name: data.name, category: data.category, nodes: [], totalPower: 0 };
+                let maxPowers = Array.isArray(data.maxPower) ? data.maxPower : Array(data.nodes.length).fill(data.maxPower);
+                for (let i = 0; i < data.nodes.length; i++) {
+                    let node = new PowerNode(data.nodes[i], data.nodes[i], data.type, data.category, maxPowers[i], data.state, key);
+                    let eqParams = data.type === 'ipt' ? { nominalCurrent: 200 } : { nominalCurrent: 100 };
+                    node.addEquipment(new Equipment(data.type, data.type === 'ipt' ? 'Инвертор' : 'Трансформатор', eqParams));
+                    this.shopGroups[key].nodes.push(node);
+                }
+            }
         }
         
-        updateAll(isEmergency, compressorFail = false) {
+        getAllNodes() {
+            let nodes = [];
+            for (let group of Object.values(this.shopGroups)) {
+                nodes.push(...group.nodes);
+            }
+            return nodes;
+        }
+        
+        updateAll(isEmergency, compressorFail) {
             let globalLoad = 0.5 + (Math.random() - 0.5) * 0.15;
             if (isEmergency) globalLoad = 0.85 + Math.random() * 0.1;
             globalLoad = Math.min(0.98, Math.max(0.35, globalLoad));
-            
             let baseVoltage = isEmergency ? 9.6 : 10.5;
             let baseFreq = isEmergency ? 49.2 : 50.0;
             
@@ -556,119 +487,112 @@
             let shopFactors = {
                 stamping: 0.7 + Math.random() * 0.3,
                 welding: 0.6 + Math.random() * 0.4,
-                painting: 0.65 + Math.random() * 0.35,
+                painting_metal: 0.65 + Math.random() * 0.35,
+                ipt: 0.7 + Math.random() * 0.3,
                 assembly: 0.7 + Math.random() * 0.3,
                 plastic: 0.5 + Math.random() * 0.4,
                 warehouse: 0.4 + Math.random() * 0.3
             };
             
-            for (let node of this.nodes) {
-                let factor = shopFactors[node.parentShop] || 0.6;
+            for (let [key, group] of Object.entries(this.shopGroups)) {
+                let factor = shopFactors[key] || 0.6;
                 if (isEmergency) factor = Math.min(0.95, factor * 1.2);
-                node.updateParams(baseVoltage, baseFreq, globalLoad, factor, isEmergency);
+                for (let node of group.nodes) {
+                    node.updateParams(baseVoltage, baseFreq, globalLoad, factor, isEmergency);
+                }
             }
             
-            // Компрессоры
             let workingCompressors = compressorFail ? 4 : 5;
             let compLoad = globalLoad * (5 / workingCompressors);
             for (let i = 0; i < this.compressors.length; i++) {
-                if (compressorFail && i === 2) continue; // К3 отключен
+                if (compressorFail && i === 2) {
+                    this.compressors[i].isOperational = false;
+                    this.compressors[i].params.pressure = 0;
+                    this.compressors[i].params.current = 0;
+                    continue;
+                }
+                this.compressors[i].isOperational = true;
                 this.compressors[i].updateParams(compLoad, isEmergency);
-            }
-            if (compressorFail && this.compressors[2]) {
-                this.compressors[2].isOperational = false;
-                this.compressors[2].params.pressure = 0;
-                this.compressors[2].params.current = 0;
             }
         }
         
         getTotalPower() {
-            return this.nodes.reduce((sum, n) => sum + n.params.power, 0);
+            let total = 0;
+            for (let group of Object.values(this.shopGroups)) {
+                for (let node of group.nodes) total += node.params.power;
+            }
+            return total;
         }
         
         getAvgFrequency() {
-            let sum = this.nodes.reduce((sum, n) => sum + n.params.frequency, 0);
-            return sum / this.nodes.length;
+            let nodes = this.getAllNodes();
+            let sum = nodes.reduce((s, n) => s + n.params.frequency, 0);
+            return sum / nodes.length;
         }
         
-        getFactoryBaseLoss() {
-            // Базовый ущерб от остановки завода (руб/час)
-            let totalProduction = 2000000; // 2 млн руб/час продукции
-            return totalProduction;
-        }
+        getFactoryBaseLoss() { return 2000000; }
         
         collectAllData() {
-            let compressorAnomalies = [], compressorIssues = [], compressorRisks = [];
             let totalFactoryLoss = this.getFactoryBaseLoss();
+            let compressorData = this.compressors.map(c => ({
+                name: c.name, params: { ...c.params }, isOperational: c.isOperational,
+                anomalies: c.detectAnomalies(),
+                issues: c.diagnoseEquipments(this.getAvgFrequency()),
+                risk: c.calculateRisk(totalFactoryLoss)
+            }));
             
-            for (let comp of this.compressors) {
-                let anoms = comp.detectAnomalies();
-                if (anoms.length) compressorAnomalies.push({ name: comp.name, anomalies: anoms });
-                let issues = comp.diagnoseEquipments(this.getAvgFrequency());
-                if (issues.length) compressorIssues.push({ name: comp.name, issues });
-                let risk = comp.calculateRisk(totalFactoryLoss);
-                compressorRisks.push({ name: comp.name, params: { ...comp.params }, ...risk });
+            let shopData = {};
+            for (let [key, group] of Object.entries(this.shopGroups)) {
+                shopData[key] = {
+                    name: group.name,
+                    category: group.category,
+                    nodes: group.nodes.map(n => ({
+                        name: n.name, type: n.type,
+                        params: { ...n.params }, maxPower: n.maxPower,
+                        anomalies: n.detectAnomalies(),
+                        issues: n.diagnoseEquipments(),
+                        risk: n.calculateRisk()
+                    }))
+                };
             }
             
-            let nodeAnomalies = [], nodeIssues = [], nodeRisks = [];
-            for (let node of this.nodes) {
-                let anoms = node.detectAnomalies();
-                if (anoms.length) nodeAnomalies.push({ name: node.name, anomalies: anoms });
-                let issues = node.diagnoseEquipments();
-                if (issues.length) nodeIssues.push({ name: node.name, issues });
-                let risk = node.calculateRisk();
-                nodeRisks.push({ name: node.name, type: node.type, category: node.category, maxPower: node.maxPower, params: { ...node.params }, ...risk });
-            }
-            
-            return {
-                compressorAnomalies, compressorIssues, compressorRisks: compressorRisks.sort((a,b) => b.risk - a.risk),
-                nodeAnomalies, nodeIssues, nodeRisks: nodeRisks.sort((a,b) => b.risk - a.risk),
-                totalPower: this.getTotalPower(),
-                avgFrequency: this.getAvgFrequency()
-            };
+            return { compressorData, shopData, totalPower: this.getTotalPower(), avgFrequency: this.getAvgFrequency() };
         }
         
         generateRecommendations(data) {
             let recs = [];
             let loadPercent = (data.totalPower / 40) * 100;
+            if (loadPercent > 85) recs.push({ priority: 'КРИТИЧЕСКАЯ', target: 'Завод', text: `Загрузка ${loadPercent.toFixed(0)}% от проектной 40 МВт! Срочно снизить нагрузку.`, timeframe: 'НЕМЕДЛЕННО' });
+            else if (loadPercent > 75) recs.push({ priority: 'ВЫСОКИЙ', target: 'Завод', text: `Загрузка ${loadPercent.toFixed(0)}%. Отключить 3-категорийных потребителей.`, timeframe: '30 минут' });
             
-            if (loadPercent > 85) {
-                recs.push({ priority: 'КРИТИЧЕСКАЯ', target: 'Завод', text: `Загрузка ${loadPercent.toFixed(0)}% от проектной 40 МВт! Срочно снизить нагрузку.`, timeframe: 'НЕМЕДЛЕННО' });
-            } else if (loadPercent > 75) {
-                recs.push({ priority: 'ВЫСОКИЙ', target: 'Завод', text: `Загрузка ${loadPercent.toFixed(0)}%. Отключить 3-категорийных потребителей.`, timeframe: '30 минут' });
-            }
-            
-            // Компрессоры
-            for (let a of data.compressorAnomalies) {
-                let critical = a.anomalies.filter(an => an.severity === 'high');
-                if (critical.length) {
-                    recs.push({ priority: 'АВАРИЯ', target: a.name, text: `${a.name}: ${critical.map(c=>c.param).join(', ')}. Переключить нагрузку на резервный компрессор.`, timeframe: 'НЕМЕДЛЕННО' });
-                } else {
-                    recs.push({ priority: 'ВНИМАНИЕ', target: a.name, text: `${a.name}: ${a.anomalies.map(c=>c.param).join(', ')}`, timeframe: '1 час' });
+            for (let c of data.compressorData) {
+                for (let a of c.anomalies.filter(a => a.severity === 'high')) {
+                    recs.push({ priority: 'АВАРИЯ', target: c.name, text: `${c.name}: ${a.param} ${a.value.toFixed(1)}. Переключить нагрузку.`, timeframe: 'НЕМЕДЛЕННО' });
+                }
+                for (let iss of c.issues.slice(0,1)) {
+                    recs.push({ priority: 'ОБОРУДОВАНИЕ', target: c.name, text: iss, timeframe: '2 часа' });
+                }
+                if (c.risk.level === 'high') {
+                    recs.push({ priority: 'ВЫСОКИЙ РИСК', target: c.name, text: `Риск отказа ${(c.risk.probability*100).toFixed(0)}%, давление ${c.params.pressure.toFixed(1)} бар`, timeframe: '10 минут' });
                 }
             }
             
-            for (let iss of data.compressorIssues.slice(0,2)) {
-                recs.push({ priority: 'ОБОРУДОВАНИЕ', target: iss.name, text: iss.issues[0], timeframe: '2 часа' });
+            for (let [key, group] of Object.entries(data.shopData)) {
+                for (let n of group.nodes) {
+                    for (let a of n.anomalies.filter(a => a.severity === 'high')) {
+                        recs.push({ priority: 'АВАРИЯ', target: n.name, text: `${n.name}: ${a.param} ${a.value.toFixed(2)}`, timeframe: 'НЕМЕДЛЕННО' });
+                    }
+                    for (let iss of n.issues.slice(0,1)) {
+                        recs.push({ priority: 'ВНИМАНИЕ', target: n.name, text: iss, timeframe: '1 час' });
+                    }
+                    if (n.risk.level === 'high') {
+                        recs.push({ priority: 'ВЫСОКИЙ РИСК', target: n.name, text: `Риск ${Math.round(n.risk.risk).toLocaleString()} ₽, нагрузка ${n.params.power.toFixed(2)}/${n.maxPower} МВт`, timeframe: '30 минут' });
+                    }
+                }
             }
             
-            for (let r of data.compressorRisks.filter(r => r.level === 'high').slice(0,2)) {
-                recs.push({ priority: 'ВЫСОКИЙ РИСК', target: r.name, text: `${r.name}: риск отказа ${(r.probability*100).toFixed(0)}%, давление ${r.params.pressure.toFixed(1)} бар`, timeframe: '10 минут' });
-            }
-            
-            // КТП/ИПТ
-            for (let a of data.nodeAnomalies.slice(0,3)) {
-                recs.push({ priority: 'ВНИМАНИЕ', target: a.name, text: `${a.name}: ${a.anomalies.map(c=>c.param).join(', ')}`, timeframe: '1 час' });
-            }
-            
-            for (let r of data.nodeRisks.filter(r => r.level === 'high').slice(0,2)) {
-                recs.push({ priority: 'ВЫСОКИЙ РИСК', target: r.name, text: `${r.name} (${r.type.toUpperCase()}): риск ${Math.round(r.risk).toLocaleString()} ₽, нагрузка ${r.params.power.toFixed(2)}/${r.maxPower} МВт`, timeframe: '30 минут' });
-            }
-            
-            if (!recs.length) {
-                recs.push({ priority: 'НОРМА', target: 'Завод', text: 'Все параметры в норме. Компрессоры работают штатно.', timeframe: 'наблюдение' });
-            }
-            return recs;
+            if (!recs.length) recs.push({ priority: 'НОРМА', target: 'Завод', text: 'Все параметры в норме. Компрессоры работают штатно.', timeframe: 'наблюдение' });
+            return recs.slice(0, 8);
         }
         
         runControlCycle(isEmergency = false, compressorFail = false) {
@@ -685,7 +609,7 @@
     }
     
     // ============================================================
-    // UI
+    // UI (с группировкой по цехам)
     // ============================================================
     let factory = new Factory();
     let currentData = null;
@@ -696,71 +620,92 @@
         let percentElem = document.getElementById('loadPercent');
         percentElem.innerHTML = percent.toFixed(0) + '%';
         percentElem.style.color = percent > 85 ? '#ff6b6b' : (percent > 70 ? '#ffd43b' : '#51cf66');
-        
         document.getElementById('avgFreq').innerHTML = data.avgFrequency.toFixed(2);
-        let totalRisk = data.compressorRisks.reduce((s,r) => s + r.risk, 0) + data.nodeRisks.reduce((s,r) => s + r.risk, 0);
+        let totalRisk = data.compressorData.reduce((s,c) => s + c.risk.risk, 0);
+        for (let group of Object.values(data.shopData)) {
+            totalRisk += group.nodes.reduce((s,n) => s + n.risk.risk, 0);
+        }
         document.getElementById('totalRisk').innerHTML = Math.round(totalRisk).toLocaleString();
-        
-        let workingComp = data.compressorRisks.filter(c => c.params.pressure > 3).length;
-        document.getElementById('compressorStatus').innerHTML = `${workingComp}/${data.compressorRisks.length}`;
+        let workingComp = data.compressorData.filter(c => c.params.pressure > 3).length;
+        document.getElementById('compressorStatus').innerHTML = `${workingComp}/${data.compressorData.length}`;
     }
     
     function renderCompressors(data) {
         const container = document.getElementById('compressors-grid');
-        container.innerHTML = data.compressorRisks.map(c => {
-            let alertClass = c.level === 'high' ? 'alert' : (c.level === 'medium' ? 'warning' : '');
+        container.innerHTML = data.compressorData.map(c => {
+            let alertClass = c.risk.level === 'high' ? 'alert' : (c.risk.level === 'medium' ? 'warning' : '');
             let pressureStatus = c.params.pressure < 5.5 ? 'danger' : (c.params.pressure < 6.5 ? 'warning' : 'normal');
-            
             return `
                 <div class="compressor-card ${alertClass}">
                     <div class="card-header">
                         <span class="card-name">🖨️ ${c.name}</span>
-                        <span class="card-badge badge-compressor">800 кВт | ${c.isOperational !== false ? '✅ В работе' : '❌ Остановлен'}</span>
+                        <span class="card-badge badge-compressor">800 кВт | ${c.isOperational ? '✅ В работе' : '❌ Стоп'}</span>
                     </div>
                     <div class="card-params">
                         <div class="param"><div class="param-label">Ток</div><div class="param-value">${c.params.current.toFixed(0)} А</div></div>
-                        <div class="param"><div class="param-label">Мощность</div><div class="param-value">${c.params.power.toFixed(0)} кВт</div></div>
-                        <div class="param"><div class="param-label">Температура</div><div class="param-value ${c.params.temperature>85?'danger':(c.params.temperature>75?'warning':'normal')}">${c.params.temperature.toFixed(0)}°C</div></div>
+                        <div class="param"><div class="param-label">T</div><div class="param-value ${c.params.temperature>85?'danger':(c.params.temperature>75?'warning':'normal')}">${c.params.temperature.toFixed(0)}°C</div></div>
                         <div class="param"><div class="param-label">Давление</div><div class="param-value ${pressureStatus}">${c.params.pressure.toFixed(1)} бар</div></div>
                         <div class="param"><div class="param-label">Вибрация</div><div class="param-value ${c.params.vibration>3.5?'danger':(c.params.vibration>2.5?'warning':'normal')}">${c.params.vibration.toFixed(1)} мм/с</div></div>
                     </div>
-                    <div class="card-risk risk-${c.level}">
-                        📊 Риск: ${Math.round(c.risk).toLocaleString()} ₽ | P(отказа): ${(c.probability*100).toFixed(0)}%
+                    <div class="card-risk risk-${c.risk.level}">
+                        📊 Риск: ${Math.round(c.risk.risk).toLocaleString()} ₽ | P(отказа): ${(c.risk.probability*100).toFixed(0)}%
                     </div>
                 </div>
             `;
         }).join('');
     }
     
-    function renderNodes(data) {
-        const container = document.getElementById('shops-grid');
-        container.innerHTML = data.nodeRisks.map(node => {
-            let alertClass = node.level === 'high' ? 'alert' : (node.level === 'medium' ? 'warning' : '');
-            let loadRatio = (node.params.power / node.maxPower) * 100;
-            let loadStatus = loadRatio > 90 ? 'danger' : (loadRatio > 75 ? 'warning' : 'normal');
-            let typeLabel = node.type === 'ipt' ? '🔴 ИПТ' : '🔹 КТП';
+    function renderShops(data) {
+        const container = document.getElementById('shops-container');
+        let order = ['stamping', 'welding', 'painting_metal', 'ipt', 'assembly', 'plastic', 'warehouse'];
+        let html = '';
+        for (let key of order) {
+            let group = data.shopData[key];
+            if (!group) continue;
+            let catClass = group.category === 1 ? 'cat1' : (group.category === 2 ? 'cat2' : 'cat3');
+            let groupRisk = group.nodes.reduce((max, n) => Math.max(max, n.risk.risk), 0);
+            let groupRiskLevel = groupRisk > 12000 ? 'high' : (groupRisk > 4000 ? 'medium' : 'low');
+            let groupPower = group.nodes.reduce((s,n) => s + n.params.power, 0);
+            let groupMaxPower = group.nodes.reduce((s,n) => s + n.maxPower, 0);
             
-            return `
-                <div class="ktp-card ${alertClass}">
-                    <div class="card-header">
-                        <span class="card-name">${typeLabel} ${node.name}</span>
-                        <span class="card-badge ${node.category === 1 ? 'badge-cat1' : (node.category === 2 ? 'badge-cat2' : 'badge-cat3')}">
-                            ${node.category} категория
-                        </span>
+            html += `
+                <div class="shop-group">
+                    <div class="shop-group-header">
+                        <span class="shop-group-name">${group.name}</span>
+                        <span class="shop-cat-badge ${catClass}">${group.category} категория</span>
+                        <span class="shop-stats">📊 ${groupPower.toFixed(1)}/${groupMaxPower.toFixed(1)} МВт | Риск: ${groupRiskLevel === 'high' ? '🔴' : (groupRiskLevel === 'medium' ? '🟡' : '🟢')}</span>
                     </div>
-                    <div class="card-params">
-                        <div class="param"><div class="param-label">U</div><div class="param-value ${node.params.voltage<9.5||node.params.voltage>10.8?'danger':'normal'}">${node.params.voltage.toFixed(2)} кВ</div></div>
-                        <div class="param"><div class="param-label">I</div><div class="param-value">${node.params.current.toFixed(0)} А</div></div>
-                        <div class="param"><div class="param-label">P</div><div class="param-value ${loadStatus}">${node.params.power.toFixed(2)}/${node.maxPower} МВт</div></div>
-                        <div class="param"><div class="param-label">T</div><div class="param-value ${node.params.temperature>85?'danger':(node.params.temperature>75?'warning':'normal')}">${node.params.temperature.toFixed(0)}°C</div></div>
-                        <div class="param"><div class="param-label">cosφ</div><div class="param-value ${node.params.cosφ<0.8?'danger':(node.params.cosφ<0.85?'warning':'normal')}">${node.params.cosφ.toFixed(2)}</div></div>
-                    </div>
-                    <div class="card-risk risk-${node.level}">
-                        📊 Риск: ${Math.round(node.risk).toLocaleString()} ₽ | P(отказа): ${(node.probability*100).toFixed(0)}%
+                    <div class="ktp-grid">
+                        ${group.nodes.map(n => {
+                            let alertClass = n.risk.level === 'high' ? 'alert' : (n.risk.level === 'medium' ? 'warning' : '');
+                            let typeLabel = n.type === 'ipt' ? '🔴 ИПТ' : '🔹 КТП';
+                            let loadRatio = (n.params.power / n.maxPower) * 100;
+                            let loadStatus = loadRatio > 90 ? 'danger' : (loadRatio > 75 ? 'warning' : 'normal');
+                            return `
+                                <div class="ktp-card ${alertClass}">
+                                    <div class="card-header">
+                                        <span class="card-name">${typeLabel} ${n.name}</span>
+                                        <span class="card-badge ${n.type === 'ipt' ? 'badge-ipt' : 'badge-ktp'}">${n.type.toUpperCase()}</span>
+                                    </div>
+                                    <div class="card-params">
+                                        <div class="param"><div class="param-label">U</div><div class="param-value ${n.params.voltage<9.5||n.params.voltage>10.8?'danger':'normal'}">${n.params.voltage.toFixed(2)} кВ</div></div>
+                                        <div class="param"><div class="param-label">I</div><div class="param-value">${n.params.current.toFixed(0)} А</div></div>
+                                        <div class="param"><div class="param-label">P</div><div class="param-value ${loadStatus}">${n.params.power.toFixed(2)}/${n.maxPower} МВт</div></div>
+                                        <div class="param"><div class="param-label">T</div><div class="param-value ${n.params.temperature>85?'danger':(n.params.temperature>75?'warning':'normal')}">${n.params.temperature.toFixed(0)}°C</div></div>
+                                        <div class="param"><div class="param-label">cosφ</div><div class="param-value ${n.params.cosφ<0.8?'danger':'normal'}">${n.params.cosφ.toFixed(2)}</div></div>
+                                    </div>
+                                    <div class="card-risk risk-${n.risk.level}">
+                                        ${n.anomalies.length ? `⚠️ ${n.anomalies.map(a=>a.param).join(', ')}<br>` : ''}
+                                        📊 Риск: ${Math.round(n.risk.risk).toLocaleString()} ₽
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
                 </div>
             `;
-        }).join('');
+        }
+        container.innerHTML = html;
     }
     
     function updateRecommendations(data) {
@@ -781,7 +726,6 @@
                 <span>Цикл #${entry.cycle}</span>
                 <span>${entry.isEmergency ? '🔥 АВАРИЯ' : (entry.compressorFail ? '🖨️ ОТКАЗ КОМПРЕССОРА' : '✅ НОРМА')}</span>
                 <span>⚡ ${entry.totalPower.toFixed(1)} МВт</span>
-                <span>⚠️ ${entry.compressorAnomalies.reduce((s,a)=>s+a.anomalies.length,0) + entry.nodeAnomalies.reduce((s,a)=>s+a.anomalies.length,0)}</span>
             </div>
         `).join('');
     }
@@ -789,13 +733,12 @@
     function updateUI(data) {
         updatePlantStats(data);
         renderCompressors(data);
-        renderNodes(data);
+        renderShops(data);
         updateRecommendations(data);
         updateHistory();
     }
     
     let compressorFailFlag = false;
-    
     function simulateCycle() { compressorFailFlag = false; currentData = factory.runControlCycle(false, false); updateUI(currentData); }
     function simulateEmergency() { compressorFailFlag = false; currentData = factory.runControlCycle(true, false); updateUI(currentData); }
     function simulateCompressorFail() { compressorFailFlag = true; currentData = factory.runControlCycle(false, true); updateUI(currentData); }
